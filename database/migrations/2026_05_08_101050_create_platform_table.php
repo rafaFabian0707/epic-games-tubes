@@ -11,10 +11,12 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('game_features', function (Blueprint $table) {
-            $table->id();
-            $table->timestamps();
-        });
+        Schema::create('platform', function (Blueprint $table) {
+    $table->id('platform_id');
+
+    $table->string('platform', 20);
+
+});
     }
 
     /**
@@ -22,6 +24,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('game_features');
+        Schema::dropIfExists('platform');
     }
 };
