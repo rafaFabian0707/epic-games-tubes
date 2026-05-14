@@ -11,9 +11,17 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('game_features', function (Blueprint $table) {
-            $table->id();
-            $table->timestamps();
+         Schema::create('game_features', function (Blueprint $table) {
+
+            $table->foreignId('game_id')
+                ->constrained('games', 'game_id')
+                ->cascadeOnDelete();
+
+            $table->foreignId('feature_id')
+                ->constrained('features', 'feature_id')
+                ->cascadeOnDelete();
+
+            $table->primary(['game_id', 'feature_id']);
         });
     }
 

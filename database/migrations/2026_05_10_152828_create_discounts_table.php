@@ -11,8 +11,22 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('discounts', function (Blueprint $table) {
-            $table->id();
+         Schema::create('discounts', function (Blueprint $table) {
+
+            $table->id('discount_id');
+
+            $table->foreignId('game_id')
+                ->constrained('games', 'game_id')
+                ->cascadeOnDelete();
+
+            $table->decimal('discount_pct', 5, 2);
+
+            $table->dateTime('start_date');
+
+            $table->dateTime('end_date');
+
+            $table->boolean('is_active')->default(true);
+
             $table->timestamps();
         });
     }

@@ -12,9 +12,11 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('features', function (Blueprint $table) {
-            $table->id();
-            $table->timestamps();
-        });
+    $table->id('feature_id');
+
+    $table->string('name', 100)->unique();
+
+});
     }
 
     /**

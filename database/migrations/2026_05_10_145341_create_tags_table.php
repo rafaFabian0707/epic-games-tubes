@@ -11,10 +11,17 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('transaction_details', function (Blueprint $table) {
-            $table->id();
+        Schema::create('tags', function (Blueprint $table) {
+
+            $table->id('tag_id');
+
+            $table->string('emoji', 10);
+
+            $table->string('label', 100);
+
             $table->timestamps();
         });
+
     }
 
     /**
@@ -22,6 +29,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('transaction_details');
+        Schema::dropIfExists('tags');
     }
 };

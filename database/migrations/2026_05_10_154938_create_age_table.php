@@ -11,10 +11,21 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('news_media', function (Blueprint $table) {
-            $table->id();
+        Schema::create('age', function (Blueprint $table) {
+
+            $table->id('age_id');
+
+            $table->foreignId('game_id')
+                ->constrained('games', 'game_id')
+                ->cascadeOnDelete();
+
+            $table->string('age', 10);
+
+            $table->string('desc', 50)->nullable();
+
             $table->timestamps();
         });
+
     }
 
     /**
@@ -22,6 +33,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('news_media');
+        Schema::dropIfExists('age');
     }
 };

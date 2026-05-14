@@ -11,10 +11,11 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('genres', function (Blueprint $table) {
-            $table->id();
-            $table->timestamps();
-        });
+       Schema::create('genres', function (Blueprint $table) {
+    $table->id('genre_id');
+
+    $table->string('name', 50)->unique();
+});
     }
 
     /**

@@ -12,8 +12,16 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('bundle_contents', function (Blueprint $table) {
-            $table->id();
-            $table->timestamps();
+
+            $table->foreignId('bundle_id')
+                ->constrained('games', 'game_id')
+                ->cascadeOnDelete();
+
+            $table->foreignId('included_game_id')
+                ->constrained('games', 'game_id')
+                ->cascadeOnDelete();
+
+            $table->primary(['bundle_id', 'included_game_id']);
         });
     }
 

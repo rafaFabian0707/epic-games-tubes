@@ -11,8 +11,18 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('transactions', function (Blueprint $table) {
-            $table->id();
+        Schema::create('game_social_links', function (Blueprint $table) {
+
+            $table->id('link_id');
+
+            $table->foreignId('game_id')
+                ->constrained('games', 'game_id')
+                ->cascadeOnDelete();
+
+            $table->string('platform', 50);
+
+            $table->string('url');
+
             $table->timestamps();
         });
     }
@@ -22,6 +32,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('transactions');
+        Schema::dropIfExists('game_social_links');
     }
 };

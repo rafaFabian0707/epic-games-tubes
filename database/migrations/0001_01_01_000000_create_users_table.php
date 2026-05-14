@@ -8,21 +8,20 @@ return new class extends Migration
 {
     public function up(): void
     {
-        Schema::create('users', function (Blueprint $table) {
-            $table->id('user_id'); // primary key custom
+       Schema::create('users', function (Blueprint $table) {
+    $table->id('user_id');
 
-            $table->string('username', 50)->unique();
-            $table->string('email', 100)->unique();
+    $table->string('username', 50)->unique();
 
-            // WAJIB untuk Laravel Auth
-            $table->string('password');
+    $table->string('email', 100)->unique();
 
-            $table->string('full_name', 100)->nullable();
+    $table->string('password_hash');
 
-            $table->boolean('is_active')->default(true);
+    $table->string('full_name', 100)->nullable();
 
-            $table->timestamp('created_at')->useCurrent();
-            $table->timestamp('updated_at')->useCurrent()->useCurrentOnUpdate();
+    $table->boolean('is_active')->default(true);
+
+    $table->timestamps();
         });
     }
 
