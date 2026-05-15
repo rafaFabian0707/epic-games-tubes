@@ -11,6 +11,7 @@ use App\Http\Controllers\NewsController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\Admin;
 
+
 // =========================================================
 // GUEST ROUTES — Bisa diakses tanpa login
 // =========================================================
@@ -31,10 +32,19 @@ Route::get('/news/{id}', [NewsController::class, 'show'])->name('news.show');
 // =========================================================
 
 Route::middleware('guest')->group(function () {
+
     Route::get('/login', [AuthController::class, 'showLogin'])->name('login');
     Route::post('/login', [AuthController::class, 'login']);
+
     Route::get('/register', [AuthController::class, 'showRegister'])->name('register');
     Route::post('/register', [AuthController::class, 'register']);
+
+});
+
+Route::get('/tes', function () {
+    // return view('welcome');
+    return view('welcome');
+
 });
 
 Route::post('/logout', [AuthController::class, 'logout'])
