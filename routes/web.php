@@ -18,6 +18,9 @@ use App\Http\Controllers\Admin;
 
 Route::get('/', [HomeController::class, 'index'])->name('home');
 
+// Jelajahi — browse semua game dengan filter
+Route::get('/jelajahi', [GameController::class, 'jelajahi'])->name('jelajahi');
+
 // Katalog & detail game
 Route::get('/store', [GameController::class, 'index'])->name('store');
 Route::get('/store/search', [GameController::class, 'search'])->name('store.search');

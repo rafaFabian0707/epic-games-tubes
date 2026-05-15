@@ -4,7 +4,9 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 
-class system_requirements extends Model
+class SystemRequirement extends Model
 {
-    //
+    protected $table = 'system_requirements'; 
+    protected $primaryKey = 'id';
+    public $timestamps = false;
 }

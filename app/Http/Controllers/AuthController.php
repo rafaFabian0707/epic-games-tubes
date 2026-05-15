@@ -2,7 +2,10 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Hash;
 
 class AuthController extends Controller
 {
@@ -13,7 +16,19 @@ class AuthController extends Controller
 
     public function login(Request $request)
     {
-        //
+        $credentials = $request->validate([
+            'email'    => ['required', 'email'],
+            'password' => ['required'],
+        ]);
+
+        if (Auth::attempt($credentials, $request->boolean('remember'))) {
+            $request->session()->regenerate();
+            return redirect()->intended(route('home'));
+        }
+
+        return back()->withErrors([
+            'email' => 'Email atau password salah.',
+        ])->onlyInput('email');
     }
 
     public function showRegister()
@@ -23,11 +38,33 @@ class AuthController extends Controller
 
     public function register(Request $request)
     {
-        //
+        $data = $request->validate([
+            'username' => ['required', 'string', 'max:50', 'unique:users,username'],
+            'email'    => ['required', 'email', 'max:100', 'unique:users,email'],
+            'password' => ['required', 'string', 'min:8', 'confirmed'],
+            'full_name'=> ['nullable', 'string', 'max:100'],
+        ]);
+
+        $user = User::create([
+            'username'  => $data['username'],
+            'email'     => $data['email'],
+            'password'  => Hash::make($data['password']),
+            'full_name' => $data['full_name'] ?? null,
+            'is_admin'  => false,
+            'is_active' => true,
+        ]);
+
+        Auth::login($user);
+        $request->session()->regenerate();
+
+        return redirect()->route('home')->with('success', 'Akun berhasil dibuat. Selamat datang!');
     }
 
-    public function logout()
+    public function logout(Request $request)
     {
-        //
+        Auth::logout();
+        $request->session()->invalidate();
+        $request->session()->regenerateToken();
+        return redirect()->route('home');
     }
 }

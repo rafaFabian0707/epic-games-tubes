@@ -17,6 +17,61 @@ use Illuminate\Http\Request;
 class GameController extends Controller
 {
     // =========================================================
+    // JELAJAHI — Halaman browse /jelajahi
+    // =========================================================
+
+    public function jelajahi(Request $request)
+    {
+        $query = Game::active()
+            ->with(['publisher', 'discounts', 'genres', 'platforms'])
+            ->whereNotNull('cover_image_url');
+
+        // --- Filter: game_type ---
+        if ($request->filled('type') && $request->type !== 'semua') {
+            $query->where('game_type', $request->type);
+        }
+
+        // --- Filter: Genre ---
+        if ($request->filled('genre')) {
+            $query->whereHas('genres', fn ($q) => $q->where('genre_id', $request->genre));
+        }
+
+        // --- Filter: Platform ---
+        if ($request->filled('platform')) {
+            $query->whereHas('platforms', fn ($q) => $q->where('platform_id', $request->platform));
+        }
+
+        // --- Filter: Harga ---
+        if ($request->filled('price')) {
+            match ($request->price) {
+                'free'       => $query->where('base_price', 0),
+                'discount'   => $query->whereHas('discounts', fn ($q) =>
+                                    $q->where('is_active', true)
+                                      ->where('start_date', '<=', now())
+                                      ->where('end_date', '>=', now())),
+                'under150'   => $query->where('base_price', '<=', 150000)->where('base_price', '>', 0),
+                'under300'   => $query->where('base_price', '<=', 300000)->where('base_price', '>', 0),
+                default      => null,
+            };
+        }
+
+        // --- Sort ---
+        match ($request->get('sort', 'newest')) {
+            'price_asc'  => $query->orderBy('base_price', 'asc'),
+            'price_desc' => $query->orderBy('base_price', 'desc'),
+            'rating'     => $query->orderByDesc('avg_rating'),
+            'name'       => $query->orderBy('title', 'asc'),
+            default      => $query->orderByDesc('game_id'),    // newest
+        };
+
+        $games     = $query->paginate(20)->withQueryString();
+        $genres    = Genre::orderBy('name')->get();
+        $platforms = Platform::orderBy('platform')->get();
+
+        return view('jelajahi', compact('games', 'genres', 'platforms'));
+    }
+
+    // =========================================================
     // INDEX — Halaman katalog /store
     // =========================================================
 
@@ -145,7 +200,7 @@ class GameController extends Controller
         $relatedGames = Game::active()
             ->with(['publisher', 'discounts'])
             ->whereHas('genres', function ($q) use ($game) {
-                $q->whereIn('genre_id', $game->genres->pluck('genre_id'));
+                $q->whereIn('genres.genre_id', $game->genres->pluck('genre_id')); // ← tambah prefix tabel
             })
             ->where('game_id', '!=', $id)
             ->inRandomOrder()

@@ -4,7 +4,9 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 
-class game_social_links extends Model
+class GameSocialLink extends Model
 {
-    //
+    protected $table = 'game_social_links'; 
+    protected $primaryKey = 'id';
+    public $timestamps = false;
 }
