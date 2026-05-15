@@ -21,7 +21,7 @@ return new class extends Migration
 
             $table->string('platform', 50);
 
-            $table->string('url');
+            $table->string('url', 255);
 
             $table->timestamps();
         });

@@ -16,8 +16,7 @@ return new class extends Migration
             $table->string('title', 200);
             $table->string('cover_url', 255);
             $table->text('main_content')->nullable();
-            $table->dateTime('date')
-                  ->default(now());
+            $table->string('date', 32)->nullable();
             $table->text('publisher');
             $table->longText('content');
 

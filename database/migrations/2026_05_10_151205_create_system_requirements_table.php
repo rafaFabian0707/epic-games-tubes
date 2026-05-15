@@ -19,26 +19,25 @@ return new class extends Migration
                 ->unique()
                 ->constrained('games', 'game_id')
                 ->cascadeOnDelete();
+            $table->string('min_os', 255)->nullable();
 
-            $table->string('min_os', 50)->nullable();
+            $table->text('min_cpu')->nullable();
 
-            $table->string('min_cpu', 100)->nullable();
+            $table->Integer('min_ram_gb')->nullable();
 
-            $table->tinyInteger('min_ram_gb')->nullable();
+            $table->text('min_gpu')->nullable();
 
-            $table->string('min_gpu', 100)->nullable();
+            $table->Integer('min_storage_gb')->nullable();
 
-            $table->smallInteger('min_storage_gb')->nullable();
+            $table->string('rec_os', 255)->nullable();
 
-            $table->string('rec_os', 50)->nullable();
+            $table->text('rec_cpu')->nullable();
 
-            $table->string('rec_cpu', 100)->nullable();
+            $table->Integer('rec_ram_gb')->nullable();
 
-            $table->tinyInteger('rec_ram_gb')->nullable();
+            $table->text('rec_gpu')->nullable();
 
-            $table->string('rec_gpu', 100)->nullable();
-
-            $table->smallInteger('rec_storage_gb')->nullable();
+            $table->Integer('rec_storage_gb')->nullable();
 
             $table->longText('languange')->nullable();
 

@@ -31,9 +31,9 @@ return new class extends Migration
 
             $table->text('desc')->nullable();
 
-            $table->string('icon_url');
+            $table->string('icon_url', 255)->nullable();
 
-            $table->decimal('base_price', 9, 2)->default(0);
+            $table->decimal('base_price', 9, 2)->nullable();
 
             $table->date('release_date')->nullable();
 
@@ -47,7 +47,7 @@ return new class extends Migration
                 ->constrained('developers', 'developer_id')
                 ->nullOnDelete();
 
-            $table->string('cover_image_url');
+            $table->string('cover_image_url', 255)->nullable();
 
             $table->enum('game_type', [
                 'base_game',
