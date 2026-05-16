@@ -7,16 +7,10 @@ use App\Models\Wishlist;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
-/**
- * PERBAIKAN: Nama file dan class diubah dari WishlistsController → WishlistController
- * Sesuai dengan routes/web.php yang mengimport WishlistController.
- */
 class WishlistController extends Controller
 {
-    public function __construct()
-    {
-        $this->middleware('auth');
-    }
+    // Middleware 'auth' sudah diset di routes/web.php
+    // JANGAN pakai $this->middleware() — Laravel 11 tidak support di constructor
 
     // GET /wishlist
     public function index()
@@ -37,7 +31,7 @@ class WishlistController extends Controller
         $gameId = (int) $request->game_id;
         $user   = Auth::user();
 
-        // Cek library — trigger MySQL juga akan cek ini, tapi cek di sini lebih cepat
+        // Cek library — game yang sudah dimiliki tidak perlu di-wishlist
         if ($user->alreadyOwns($gameId)) {
             return back()->with('error', 'Game ini sudah ada di library-mu.');
         }

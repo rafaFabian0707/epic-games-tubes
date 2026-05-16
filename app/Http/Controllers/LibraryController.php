@@ -7,10 +7,8 @@ use Illuminate\Support\Facades\Auth;
 
 class LibraryController extends Controller
 {
-    public function __construct()
-    {
-        $this->middleware('auth');
-    }
+    // Middleware 'auth' sudah diset di routes/web.php
+    // JANGAN pakai $this->middleware() — Laravel 11 tidak support di constructor
 
     // GET /library
     // Library diisi OTOMATIS oleh trigger — controller hanya READ

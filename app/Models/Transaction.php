@@ -15,6 +15,10 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
  *    (BUKAN: status = 'completed')
  *  - Library diisi OTOMATIS oleh trigger trg_after_transaction_insert,
  *    bukan oleh kode Laravel.
+ *
+ * BUG FIX v1:
+ *  - details() sebelumnya memakai `transaction_details::class` (lowercase, SALAH)
+ *    → diperbaiki menjadi `TransactionDetail::class` (PascalCase, BENAR)
  */
 class Transaction extends Model
 {
@@ -68,7 +72,6 @@ class Transaction extends Model
 
     /**
      * Transaksi dimiliki oleh satu user.
-     * BR-16: Relasi wajib, tidak boleh null.
      */
     public function user()
     {
@@ -77,10 +80,12 @@ class Transaction extends Model
 
     /**
      * Satu transaksi bisa berisi banyak item (detail).
+     *
+     * FIX: `transaction_details::class` (lowercase) → `TransactionDetail::class`
      */
     public function details()
     {
-        return $this->hasMany(transaction_details::class, 'transaction_id', 'transaction_id');
+        return $this->hasMany(TransactionDetail::class, 'transaction_id', 'transaction_id');
     }
 
     /**
@@ -107,5 +112,19 @@ class Transaction extends Model
     public function isCompleted(): bool
     {
         return $this->completed_at !== null;
+    }
+
+    /**
+     * Format metode pembayaran untuk tampilan
+     */
+    public function getPaymentMethodLabelAttribute(): string
+    {
+        return match ($this->payment_method) {
+            'credit_card' => 'Credit Card',
+            'debit_card'  => 'Debit Card',
+            'paypal'      => 'PayPal',
+            'gift_card'   => 'Gift Card',
+            default       => ucfirst($this->payment_method),
+        };
     }
 }

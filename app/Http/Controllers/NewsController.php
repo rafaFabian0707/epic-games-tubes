@@ -9,7 +9,7 @@ class NewsController extends Controller
     public function index()
     {
         $newsList = News::where('is_active', true)
-            ->latest('created_at')
+            ->latest('news_id')   // ← ganti dari created_at ke news_id
             ->paginate(12);
 
         return view('news.index', compact('newsList'));

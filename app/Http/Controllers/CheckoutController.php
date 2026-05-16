@@ -28,10 +28,7 @@ class CheckoutController extends Controller
     // Middleware: halaman ini hanya untuk user yang sudah login
     // =========================================================
 
-    public function __construct()
-    {
-        $this->middleware('auth');
-    }
+    
 
     // =========================================================
     // INDEX — Tampilkan halaman ringkasan checkout GET /checkout
