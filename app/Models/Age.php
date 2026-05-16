@@ -7,6 +7,6 @@ use Illuminate\Database\Eloquent\Model;
 class Age extends Model
 {
     protected $table = 'age'; 
-    protected $primaryKey = 'id';
+    protected $primaryKey = 'age_id';
     public $timestamps = false;
 }
