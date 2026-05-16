@@ -61,4 +61,34 @@ class WishlistController extends Controller
 
         return back()->with('success', 'Game dihapus dari wishlist.');
     }
+
+    // POST /wishlist/toggle
+    public function toggle(Request $request)
+    {
+        $request->validate(['game_id' => ['required', 'integer', 'exists:games,game_id']]);
+
+        $gameId = (int) $request->game_id;
+        $user   = Auth::user();
+
+        // Game yang sudah dimiliki tidak bisa di-wishlist
+        if ($user->alreadyOwns($gameId)) {
+            return back()->with('info', 'Game ini sudah ada di library-mu.');
+        }
+
+        $existing = Wishlist::where('user_id', $user->user_id)
+                            ->where('game_id', $gameId)
+                            ->first();
+
+        if ($existing) {
+            $existing->delete();
+            return back()->with('success', 'Game dihapus dari wishlist.');
+        }
+
+        Wishlist::create([
+            'user_id' => $user->user_id,
+            'game_id' => $gameId,
+        ]);
+
+        return back()->with('success', 'Game ditambahkan ke wishlist.');
+    }
 }

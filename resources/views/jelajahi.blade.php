@@ -12,53 +12,7 @@
 
 <body class="antialiased pb-20 min-w-full max-w-full w-full flex flex-col bg-background text-primary">
 
-    {{-- ===================== HEADER ===================== --}}
-    <header class="text-primary w-full min-h-18 bg-white/1 flex items-center justify-center px-5">
-        <div class="w-full h-full flex items-center justify-start gap-8">
-            <div class="h-full flex items-center justify-start gap-9">
-                <a href="{{ route('home') }}" class="flex w-fit cursor-pointer group">
-                    <img src="/img/logo_ph.png" alt="Logo" class="h-8.5">
-                    <span class="flex items-center group-hover:rotate-180 transition-transform duration-150">
-                        <svg viewBox="0 0 24 24" class="w-3 h-3" fill="currentColor">
-                            <path d="M18.47 8.97a.75.75 0 1 1 1.06 1.06L12 17.56l-7.53-7.53a.75.75 0 1 1 1.06-1.06L12 15.44z"></path>
-                        </svg>
-                    </span>
-                </a>
-                <b class="font-black text-lg">STORE</b>
-            </div>
-            <nav class="w-fit h-full flex items-center gap-8">
-                <a href="#" class="text-sm font-medium hover:text-white/70 transition-colors">Dukungan</a>
-                <a href="#" class="text-sm font-medium hover:text-white/70 transition-colors">Distribusi</a>
-            </nav>
-        </div>
-        <div class="w-full h-full flex items-center justify-end gap-5">
-            @auth
-                <a href="{{ route('library.index') }}" class="font-semibold text-sm bg-white/15 hover:bg-white/30 px-3 py-1.5 rounded-md tracking-wide transition-colors">Library</a>
-                <form action="{{ route('logout') }}" method="POST" class="inline">
-                    @csrf
-                    <button type="submit" class="font-semibold text-sm bg-white/15 hover:bg-white/30 px-3 py-1.5 rounded-md tracking-wide transition-colors">Keluar</button>
-                </form>
-            @else
-                <a href="{{ route('login') }}" class="font-semibold text-sm bg-white/15 hover:bg-white/30 px-3 py-1.5 rounded-md tracking-wide transition-colors">Masuk</a>
-                <a href="{{ route('register') }}" class="font-semibold text-sm bg-[#26bbff] text-black px-3 py-1.5 rounded-md tracking-wide hover:bg-[#56cbff] transition-colors">Daftar</a>
-            @endauth
-        </div>
-    </header>
-
-    {{-- ===================== STICKY NAV ===================== --}}
-    <div class="flex items-center gap-10 h-20 sticky top-0 px-40 py-8 bg-background/95 backdrop-blur-sm z-50 border-b border-white/5">
-        <form action="{{ route('jelajahi') }}" method="GET">
-            <input name="q"
-                class="bg-[#1A1A22] rounded-full px-5 py-2.5 w-60 text-gray-300 text-sm outline-none border border-transparent focus:border-white/20 transition-colors"
-                placeholder="Cari di toko"
-                value="{{ request('q') }}" />
-        </form>
-        <div class="flex gap-8 text-sm">
-            <a href="{{ route('home') }}" class="text-gray-400 hover:text-white transition-colors">Temukan</a>
-            <a href="{{ route('jelajahi') }}" class="font-semibold border-b-2 border-white pb-1">Jelajahi</a>
-            <a href="{{ route('news.index') }}" class="text-gray-400 hover:text-white transition-colors">Berita</a>
-        </div>
-    </div>
+    <x-navbar />
 
     {{-- ===================== MAIN CONTENT ===================== --}}
     <div class="px-40 mt-10 max-w-full w-full flex items-start gap-x-6">
