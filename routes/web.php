@@ -9,8 +9,12 @@ use App\Http\Controllers\WishlistController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\NewsController;
 use App\Http\Controllers\HomeController;
-use App\Http\Controllers\Admin;
-
+use App\Http\Controllers\Admin\DashboardController as AdminDashboard;
+use App\Http\Controllers\Admin\GameController as AdminGameController;
+use App\Http\Controllers\Admin\PlatformController as AdminPlatformController;
+use App\Http\Controllers\Admin\NewsController as AdminNewsController;
+use App\Http\Controllers\Admin\DiscountController as AdminDiscountController;
+use App\Http\Controllers\Admin\UserController as AdminUserController;
 
 // =========================================================
 // GUEST ROUTES — Bisa diakses tanpa login
@@ -18,17 +22,12 @@ use App\Http\Controllers\Admin;
 
 Route::get('/', [HomeController::class, 'index'])->name('home');
 
-// Jelajahi — browse semua game dengan filter
 Route::get('/jelajahi', [GameController::class, 'jelajahi'])->name('jelajahi');
 
-// Katalog & detail game
 Route::get('/store', [GameController::class, 'index'])->name('store');
 Route::get('/store/search', [GameController::class, 'search'])->name('store.search');
 Route::get('/game/{id}', [GameController::class, 'show'])->name('game.show');
-Route::get('/game/{id}/addons', [GameController::class, 'addons'])->name('game.addons');
-Route::get('/game/{id}/achievements', [GameController::class, 'achievements'])->name('game.achievements');
 
-// Berita
 Route::get('/news', [NewsController::class, 'index'])->name('news.index');
 Route::get('/news/{id}', [NewsController::class, 'show'])->name('news.show');
 
@@ -43,12 +42,6 @@ Route::middleware('guest')->group(function () {
 
     Route::get('/register', [AuthController::class, 'showRegister'])->name('register');
     Route::post('/register', [AuthController::class, 'register']);
-
-});
-
-Route::get('/tes', function () {
-    // return view('welcome');
-    return view('welcome');
 
 });
 
@@ -72,7 +65,7 @@ Route::middleware('auth')->group(function () {
     Route::post('/checkout', [CheckoutController::class, 'process'])->name('checkout.process');
     Route::get('/checkout/success', [CheckoutController::class, 'success'])->name('checkout.success');
 
-    // Library — diisi otomatis oleh trigger MySQL, hanya read dari Laravel
+    // Library — diisi otomatis oleh trigger MySQL, Laravel hanya READ
     Route::get('/library', [LibraryController::class, 'index'])->name('library.index');
 
     // Wishlist
@@ -80,6 +73,7 @@ Route::middleware('auth')->group(function () {
     Route::post('/wishlist/add', [WishlistController::class, 'add'])->name('wishlist.add');
     Route::post('/wishlist/toggle', [WishlistController::class, 'toggle'])->name('wishlist.toggle');
     Route::delete('/wishlist/{id}', [WishlistController::class, 'remove'])->name('wishlist.remove');
+
 });
 
 // =========================================================
@@ -91,14 +85,31 @@ Route::middleware(['auth', 'admin'])
     ->name('admin.')
     ->group(function () {
 
-        // Route::get('/dashboard', [Admin\DashboardController::class, 'index'])->name('dashboard');
+        // Dashboard
+        Route::get('/dashboard', [AdminDashboard::class, 'index'])->name('dashboard');
 
-        // Route::resource('/games', Admin\GameController::class);
-        // Route::resource('/publishers', Admin\PublisherController::class);
-        // Route::resource('/news', Admin\NewsController::class);
-        // Route::resource('/discounts', Admin\DiscountController::class);
-        // Route::resource('/users', Admin\UserController::class);
+        // Redirect /admin ke dashboard
+        Route::get('/', fn() => redirect()->route('admin.dashboard'));
 
-        // // BARU v4.0 — Platform management
-        // Route::resource('/platforms', Admin\PlatformController::class);
+        // CRUD Game (Resource: index, create, store, show, edit, update, destroy)
+        Route::resource('/games', AdminGameController::class);
+
+        // CRUD Platform (Resource)
+        Route::resource('/platforms', AdminPlatformController::class);
+
+        // CRUD News (Resource)
+        Route::resource('/news', AdminNewsController::class);
+
+        // CRUD Discounts (Resource)
+        Route::resource('/discounts', AdminDiscountController::class);
+
+        // User management
+        Route::get('/users', [AdminUserController::class, 'index'])->name('users.index');
+        Route::get('/users/{user}', [AdminUserController::class, 'show'])->name('users.show');
+        Route::get('/users/{user}/edit', [AdminUserController::class, 'edit'])->name('users.edit');
+        Route::put('/users/{user}', [AdminUserController::class, 'update'])->name('users.update');
+        Route::post('/users/{user}/toggle-admin', [AdminUserController::class, 'toggleAdmin'])->name('users.toggle-admin');
+        Route::post('/users/{user}/toggle-active', [AdminUserController::class, 'toggleActive'])->name('users.toggle-active');
+        Route::delete('/users/{user}', [AdminUserController::class, 'destroy'])->name('users.destroy');
+
     });
