@@ -7,7 +7,7 @@
     <a href="{{ route('game.show', $game->game_id) }}" class="block">
 
         {{-- Cover image --}}
-        <div class="relative overflow-hidden aspect-[3/4]">
+        <div class="relative overflow-hidden aspect-2/3">
             @if($game->cover_image_url)
             <img src="{{ $game->cover_image_url }}" alt="{{ $game->title }}"
                  class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
