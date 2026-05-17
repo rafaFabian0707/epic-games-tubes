@@ -3,193 +3,236 @@
 @section('title', 'Checkout — Epic Games')
 
 @section('content')
-<div class="min-h-screen bg-gray-950 py-10">
-    <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+{{--
+    Checkout Epic Games asli tampil sebagai MODAL di atas halaman cart.
+    Kita simulasikan dengan full-page overlay yang mirip modal.
+--}}
+<div class="min-h-screen bg-[#121212] flex items-center justify-center py-10 relative">
 
-        {{-- ===== PAGE HEADER ===== --}}
-        <div class="mb-8">
-            <div class="flex items-center gap-3 mb-2">
-                <a href="{{ route('cart.index') }}" class="text-gray-500 hover:text-gray-300 transition-colors">
-                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/>
+    {{-- Background blur (simulasi halaman cart di belakang) --}}
+    <div class="absolute inset-0 bg-[#121212]/80 backdrop-blur-sm z-0"></div>
+
+    {{-- ===== MODAL CHECKOUT ===== --}}
+    <div class="relative z-10 w-full max-w-4xl mx-4 bg-[#1A1A22] rounded-2xl overflow-hidden shadow-2xl shadow-black/60
+                border border-white/10 flex flex-col md:flex-row min-h-[500px]">
+
+        {{-- ===== KIRI: Item Summary ===== --}}
+        <div class="md:w-96 bg-[#0d0d14] p-8 flex flex-col border-r border-white/5">
+
+            {{-- Header --}}
+            <div class="flex items-center gap-3 mb-8">
+                <div class="w-8 h-8 bg-[#26bbff] rounded flex items-center justify-center flex-shrink-0">
+                    <svg class="w-5 h-5 text-black" fill="currentColor" viewBox="0 0 24 24">
+                        <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/>
                     </svg>
-                </a>
-                <h1 class="text-2xl font-bold text-white tracking-tight">Checkout</h1>
+                </div>
+                <h2 class="text-white font-bold text-lg">Checkout</h2>
             </div>
-            <p class="text-gray-400 text-sm">Tinjau pesananmu sebelum melanjutkan pembayaran.</p>
+
+            {{-- Game cover + info --}}
+            @php $firstGame = $cartGames->first(); @endphp
+            @if ($firstGame)
+            <div class="flex items-start gap-4 mb-5">
+                <div class="w-20 h-24 rounded-lg overflow-hidden bg-gray-800 flex-shrink-0">
+                    @if ($firstGame->cover_image_url)
+                        <img src="{{ $firstGame->cover_image_url }}"
+                             alt="{{ $firstGame->title }}"
+                             class="w-full h-full object-cover">
+                    @endif
+                </div>
+                <div>
+                    <p class="text-white font-semibold text-sm">{{ $firstGame->title }}</p>
+                    @if ($cartGames->count() > 1)
+                        <button class="text-gray-400 hover:text-white text-xs mt-1 flex items-center gap-1 transition-colors">
+                            + {{ $cartGames->count() - 1 }} more
+                            <svg class="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd"/>
+                            </svg>
+                        </button>
+                    @endif
+
+                    {{-- Saving badge --}}
+                    @php $savings = $cartGames->sum('base_price') - $cartGames->sum('final_price'); @endphp
+                    @if ($savings > 0)
+                        <span class="inline-block mt-2 bg-green-600/20 border border-green-600/40 text-green-400 text-xs px-2 py-0.5 rounded">
+                            Saving Rp {{ number_format($savings, 0, ',', '.') }}
+                        </span>
+                    @endif
+                </div>
+            </div>
+            @endif
+
+            <div class="border-t border-white/10 my-4"></div>
+
+            {{-- Price breakdown --}}
+            <div class="space-y-3 text-sm mb-4">
+                <div class="flex justify-between">
+                    <span class="text-gray-400">Subtotal</span>
+                    <span class="text-white">Rp {{ number_format($total, 0, ',', '.') }}</span>
+                </div>
+                <div class="flex justify-between">
+                    <span class="text-gray-400">VAT included (11%)</span>
+                    <span class="text-white">Rp {{ number_format($total * 0.11, 0, ',', '.') }}</span>
+                </div>
+            </div>
+
+            <div class="border-t border-white/10 my-4"></div>
+
+            {{-- Total --}}
+            <div class="flex justify-between items-center mb-6">
+                <span class="text-white font-bold text-base">Total</span>
+                <span class="text-white font-bold text-2xl">
+                    Rp {{ number_format($total, 0, ',', '.') }}
+                </span>
+            </div>
+
+            {{-- Epic Rewards statis --}}
+            <div class="bg-[#26bbff]/10 border border-[#26bbff]/20 rounded-lg px-3 py-2 flex items-center gap-2">
+                <svg class="w-4 h-4 text-[#26bbff] flex-shrink-0" fill="currentColor" viewBox="0 0 24 24">
+                    <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+                </svg>
+                <span class="text-[#26bbff] text-xs">
+                    Get Rp {{ number_format($total * 0.05, 0, ',', '.') }} in Epic Rewards.
+                </span>
+            </div>
         </div>
 
-        {{-- ===== FLASH ERROR ===== --}}
-        @if (session('error'))
-            <div class="mb-6 flex items-start gap-3 bg-red-900/40 border border-red-700/60 text-red-300 text-sm rounded-xl px-4 py-3">
-                <svg class="w-5 h-5 mt-0.5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
-                    <path fill-rule="evenodd" d="M18 10A8 8 0 112 10a8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clip-rule="evenodd"/>
-                </svg>
-                <span>{{ session('error') }}</span>
-            </div>
-        @endif
+        {{-- ===== KANAN: Payment Details ===== --}}
+        <div class="flex-1 p-8 flex flex-col">
 
-        <form action="{{ route('checkout.process') }}" method="POST">
-            @csrf
-
-            <div class="flex flex-col lg:flex-row gap-8">
-
-                {{-- ===== KOLOM KIRI: Item + Pembayaran ===== --}}
-                <div class="flex-1 space-y-6">
-
-                    {{-- ---- Item List ---- --}}
-                    <div class="bg-gray-900 border border-gray-800 rounded-xl overflow-hidden">
-                        <div class="px-5 py-4 border-b border-gray-800">
-                            <h2 class="text-white font-semibold text-sm">
-                                Item yang Dibeli ({{ $cartGames->count() }})
-                            </h2>
+            {{-- Close button → kembali ke cart --}}
+            <div class="flex justify-between items-start mb-8">
+                <div>
+                    <p class="text-gray-400 text-sm mb-0.5">Logged in as</p>
+                    <div class="flex items-center gap-2">
+                        <div class="w-6 h-6 bg-blue-600 rounded-full flex items-center justify-center text-xs font-bold text-white">
+                            {{ strtoupper(substr(auth()->user()->username, 0, 1)) }}
                         </div>
-
-                        <div class="divide-y divide-gray-800">
-                            @foreach ($cartGames as $game)
-                                <div class="flex items-center gap-4 px-5 py-4">
-                                    {{-- Thumbnail --}}
-                                    <div class="w-16 h-10 rounded-lg overflow-hidden bg-gray-800 flex-shrink-0">
-                                        @if ($game->cover_image_url)
-                                            <img src="{{ $game->cover_image_url }}"
-                                                 alt="{{ $game->title }}"
-                                                 class="w-full h-full object-cover">
-                                        @else
-                                            <div class="w-full h-full flex items-center justify-center">
-                                                <svg class="w-5 h-5 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"/>
-                                                </svg>
-                                            </div>
-                                        @endif
-                                    </div>
-
-                                    {{-- Info --}}
-                                    <div class="flex-1 min-w-0">
-                                        <p class="text-white text-sm font-medium truncate">{{ $game->title }}</p>
-                                        @if ($game->publisher)
-                                            <p class="text-gray-500 text-xs">{{ $game->publisher->name }}</p>
-                                        @endif
-                                        @if ($game->ageRating)
-                                            <span class="inline-block text-xs border border-gray-700 text-gray-400 px-1.5 rounded mt-1">
-                                                {{ $game->ageRating->rating_label ?? 'Everyone' }}
-                                            </span>
-                                        @endif
-                                    </div>
-
-                                    {{-- Harga --}}
-                                    <div class="flex-shrink-0 text-right">
-                                        @if ($game->discount_pct > 0)
-                                            <div class="flex items-center gap-1.5 justify-end">
-                                                <span class="bg-green-600 text-white text-xs font-bold px-1 py-0.5 rounded">-{{ $game->discount_pct }}%</span>
-                                                <span class="text-gray-500 text-xs line-through">${{ number_format($game->base_price, 2) }}</span>
-                                            </div>
-                                        @endif
-                                        <span class="text-white font-bold text-sm">
-                                            @if ($game->final_price == 0)
-                                                <span class="text-green-400">Gratis</span>
-                                            @else
-                                                ${{ number_format($game->final_price, 2) }}
-                                            @endif
-                                        </span>
-                                    </div>
-                                </div>
-                            @endforeach
-                        </div>
+                        <span class="text-white text-sm font-medium">{{ auth()->user()->username }}</span>
                     </div>
-
-                    {{-- ---- Metode Pembayaran ---- --}}
-                    <div class="bg-gray-900 border border-gray-800 rounded-xl overflow-hidden">
-                        <div class="px-5 py-4 border-b border-gray-800">
-                            <h2 class="text-white font-semibold text-sm">Metode Pembayaran</h2>
-                        </div>
-
-                        <div class="p-5 grid grid-cols-1 sm:grid-cols-2 gap-3">
-                            @php
-                                $methods = [
-                                    'credit_card' => ['label' => 'Credit Card', 'icon' => 'M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z'],
-                                    'debit_card'  => ['label' => 'Debit Card',  'icon' => 'M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z'],
-                                    'paypal'      => ['label' => 'PayPal',       'icon' => 'M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z'],
-                                    'gift_card'   => ['label' => 'Gift Card',    'icon' => 'M12 8v13m0-13V6a2 2 0 112 2h-2zm0 0V5.5A2.5 2.5 0 109.5 8H12zm-7 4h14M5 12a2 2 0 110-4h14a2 2 0 110 4M5 12v7a2 2 0 002 2h10a2 2 0 002-2v-7'],
-                                ];
-                            @endphp
-
-                            @foreach ($methods as $value => $method)
-                                <label class="flex items-center gap-3 bg-gray-800 border border-gray-700 rounded-xl px-4 py-3 cursor-pointer
-                                              hover:border-blue-500/60 transition-all duration-200
-                                              has-[:checked]:border-blue-500 has-[:checked]:bg-blue-600/10">
-                                    <input type="radio" name="payment_method" value="{{ $value }}"
-                                           class="accent-blue-500"
-                                           {{ old('payment_method') === $value ? 'checked' : ($value === 'credit_card' ? 'checked' : '') }}>
-                                    <svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="{{ $method['icon'] }}"/>
-                                    </svg>
-                                    <span class="text-gray-200 text-sm font-medium">{{ $method['label'] }}</span>
-                                </label>
-                            @endforeach
-
-                            @error('payment_method')
-                                <p class="col-span-2 text-red-400 text-xs mt-1">{{ $message }}</p>
-                            @enderror
-                        </div>
-                    </div>
-
                 </div>
+                <a href="{{ route('cart.index') }}"
+                   class="text-gray-500 hover:text-white transition-colors p-1">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                    </svg>
+                </a>
+            </div>
 
-                {{-- ===== KOLOM KANAN: Order Summary ===== --}}
-                <div class="lg:w-72 flex-shrink-0">
-                    <div class="bg-gray-900 border border-gray-800 rounded-xl p-6 sticky top-20">
-                        <h2 class="text-white font-bold text-base mb-5">Ringkasan</h2>
+            <h3 class="text-white font-bold text-base mb-5">Payment Details</h3>
 
-                        {{-- Sub-total per item --}}
-                        <div class="space-y-2.5 mb-4">
-                            @foreach ($cartGames as $game)
-                                <div class="flex justify-between text-sm">
-                                    <span class="text-gray-400 truncate flex-1 min-w-0 mr-2">{{ $game->title }}</span>
-                                    <span class="text-white flex-shrink-0">
-                                        @if ($game->final_price == 0) Gratis
-                                        @else ${{ number_format($game->final_price, 2) }}
-                                        @endif
-                                    </span>
-                                </div>
-                            @endforeach
+            {{-- Flash error --}}
+            @if (session('error'))
+                <div class="mb-4 bg-red-900/40 border border-red-700/60 text-red-300 px-4 py-3 rounded-lg text-sm">
+                    {{ session('error') }}
+                </div>
+            @endif
+
+            <form action="{{ route('checkout.process') }}" method="POST">
+                @csrf
+
+                {{-- ===== PAYMENT METHOD ===== --}}
+                <div class="space-y-2 mb-6">
+
+                    {{-- Epic Rewards (statis, disable) --}}
+                    <label class="flex items-center justify-between bg-[#0d0d14] border border-white/10 rounded-xl px-4 py-3.5 cursor-not-allowed opacity-60">
+                        <div class="flex items-center gap-3">
+                            <div class="w-8 h-8 bg-[#26bbff] rounded flex items-center justify-center">
+                                <svg class="w-5 h-5 text-black" fill="currentColor" viewBox="0 0 24 24">
+                                    <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+                                </svg>
+                            </div>
+                            <span class="text-white text-sm font-medium">Epic Rewards</span>
                         </div>
+                        <svg class="w-4 h-4 text-gray-500" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd"/>
+                        </svg>
+                    </label>
 
-                        <div class="border-t border-gray-800 my-4"></div>
-
-                        {{-- Total --}}
-                        <div class="flex justify-between items-center mb-6">
-                            <span class="text-gray-300 font-semibold">Total</span>
-                            <span class="text-white font-bold text-2xl">${{ number_format($total, 2) }}</span>
+                    {{-- PayPal --}}
+                    <label class="flex items-center gap-3 bg-[#0d0d14] border border-white/10 rounded-xl px-4 py-3.5 cursor-pointer
+                                  hover:border-white/20 transition-colors has-[:checked]:border-[#26bbff]">
+                        <input type="radio" name="payment_method" value="paypal"
+                               class="accent-[#26bbff]"
+                               {{ old('payment_method') === 'paypal' ? 'checked' : '' }}>
+                        <div class="w-8 h-8 bg-[#003087] rounded flex items-center justify-center flex-shrink-0">
+                            <span class="text-white font-black text-xs">P</span>
                         </div>
+                        <span class="text-white text-sm font-medium">PayPal</span>
+                    </label>
 
-                        {{-- Catatan simulasi --}}
-                        <div class="bg-blue-900/20 border border-blue-800/40 rounded-lg px-3 py-2.5 mb-5">
-                            <p class="text-blue-300 text-xs leading-relaxed">
-                                <strong>Simulasi:</strong> Pembayaran ini bersifat simulasi akademis.
-                                Tidak ada transaksi finansial nyata.
-                            </p>
-                        </div>
-
-                        {{-- Tombol bayar --}}
-                        <button type="submit"
-                                class="w-full flex items-center justify-center gap-2 bg-blue-600 hover:bg-blue-500
-                                       text-white font-bold text-sm py-3.5 rounded-xl transition-colors duration-200">
-                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                      d="M5 13l4 4L19 7"/>
+                    {{-- Credit Card --}}
+                    <label class="flex items-center gap-3 bg-[#0d0d14] border border-white/10 rounded-xl px-4 py-3.5 cursor-pointer
+                                  hover:border-white/20 transition-colors has-[:checked]:border-[#26bbff]">
+                        <input type="radio" name="payment_method" value="credit_card"
+                               class="accent-[#26bbff]"
+                               {{ old('payment_method', 'credit_card') === 'credit_card' ? 'checked' : '' }}>
+                        <div class="w-8 h-8 bg-gray-700 rounded flex items-center justify-center flex-shrink-0">
+                            <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"/>
                             </svg>
-                            Konfirmasi Pembayaran
-                        </button>
+                        </div>
+                        <span class="text-white text-sm font-medium">Credit Card</span>
+                    </label>
 
-                        <a href="{{ route('cart.index') }}"
-                           class="w-full flex justify-center text-gray-500 hover:text-gray-300 text-xs mt-3 transition-colors">
-                            ← Kembali ke Keranjang
-                        </a>
-                    </div>
+                    {{-- Debit Card --}}
+                    <label class="flex items-center gap-3 bg-[#0d0d14] border border-white/10 rounded-xl px-4 py-3.5 cursor-pointer
+                                  hover:border-white/20 transition-colors has-[:checked]:border-[#26bbff]">
+                        <input type="radio" name="payment_method" value="debit_card"
+                               class="accent-[#26bbff]"
+                               {{ old('payment_method') === 'debit_card' ? 'checked' : '' }}>
+                        <div class="w-8 h-8 bg-gray-700 rounded flex items-center justify-center flex-shrink-0">
+                            <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"/>
+                            </svg>
+                        </div>
+                        <span class="text-white text-sm font-medium">Debit Card</span>
+                    </label>
+
+                    {{-- Gift Card --}}
+                    <label class="flex items-center gap-3 bg-[#0d0d14] border border-white/10 rounded-xl px-4 py-3.5 cursor-pointer
+                                  hover:border-white/20 transition-colors has-[:checked]:border-[#26bbff]">
+                        <input type="radio" name="payment_method" value="gift_card"
+                               class="accent-[#26bbff]"
+                               {{ old('payment_method') === 'gift_card' ? 'checked' : '' }}>
+                        <div class="w-8 h-8 bg-gray-700 rounded flex items-center justify-center flex-shrink-0">
+                            <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v13m0-13V6a2 2 0 112 2h-2zm0 0V5.5A2.5 2.5 0 109.5 8H12zm-7 4h14M5 12a2 2 0 110-4h14a2 2 0 110 4M5 12v7a2 2 0 002 2h10a2 2 0 002-2v-7"/>
+                            </svg>
+                        </div>
+                        <span class="text-white text-sm font-medium">Gift Card</span>
+                    </label>
+
+                    @error('payment_method')
+                        <p class="text-red-400 text-xs mt-1">{{ $message }}</p>
+                    @enderror
                 </div>
 
-            </div>
-        </form>
+                {{-- Spacer --}}
+                <div class="flex-1"></div>
+
+                {{-- Pay Now button --}}
+                <button type="submit"
+                        class="w-full bg-[#26bbff] hover:bg-[#56cbff] text-black font-bold py-4 rounded-xl
+                               transition-colors duration-200 text-base mb-4">
+                    Pay Now
+                </button>
+
+                {{-- Legal note --}}
+                <p class="text-gray-600 text-xs leading-relaxed text-center">
+                    By selecting 'Pay Now', you certify that you are over 18, are authorized to use this
+                    payment method, and agree to the
+                    <span class="text-[#26bbff]">End User License Agreement</span>.
+                </p>
+                <p class="text-gray-600 text-xs leading-relaxed text-center mt-1">
+                    You are paying for a digital license for this product; for terms, see
+                    <span class="text-[#26bbff]">purchase policy</span>.
+                </p>
+                <p class="text-center text-gray-700 text-xs mt-3">
+                    ⚠ Simulasi akademis — tidak ada transaksi finansial nyata.
+                </p>
+            </form>
+        </div>
 
     </div>
 </div>

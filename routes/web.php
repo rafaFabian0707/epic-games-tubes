@@ -25,6 +25,8 @@ Route::get('/jelajahi', [GameController::class, 'jelajahi'])->name('jelajahi');
 Route::get('/store', [GameController::class, 'index'])->name('store');
 Route::get('/store/search', [GameController::class, 'search'])->name('store.search');
 Route::get('/game/{id}', [GameController::class, 'show'])->name('game.show');
+Route::get('/game/{id}/addons', [GameController::class, 'addons'])->name('game.addons');
+Route::get('/game/{id}/achievements', [GameController::class, 'achievements'])->name('game.achievements');
 
 // Berita
 Route::get('/news', [NewsController::class, 'index'])->name('news.index');
