@@ -667,6 +667,32 @@
                     </div>
                 </div>
                 @endif
+
+                {{-- Age Rating --}}
+                @if($game->ageRating)
+                @php
+                    $ageColor = match(strtoupper($game->ageRating->age)) {
+                        'E'     => 'border-green-600 text-green-500',
+                        'E10+'  => 'border-green-500 text-green-400',
+                        'T'     => 'border-yellow-600 text-yellow-500',
+                        'M'     => 'border-red-600 text-red-500',
+                        'AO'    => 'border-red-800 text-red-600',
+                        'RP'    => 'border-gray-500 text-gray-400',
+                        default => 'border-gray-600 text-gray-400',
+                    };
+                @endphp
+                <div class="flex justify-between items-center py-3 border-b border-gray-800/40">
+                    <span class="text-gray-500 text-sm">Age Rating</span>
+                    <div class="flex items-center gap-2">
+                        <span class="border {{ $ageColor }} text-xs font-bold px-2 py-0.5 rounded leading-none">
+                            {{ strtoupper($game->ageRating->age) }}
+                        </span>
+                        @if($game->ageRating->desc)
+                            <span class="text-gray-400 text-xs">{{ $game->ageRating->desc }}</span>
+                        @endif
+                    </div>
+                </div>
+                @endif
             </div>
 
             {{-- See All Editions --}}

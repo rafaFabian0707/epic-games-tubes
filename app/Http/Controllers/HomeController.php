@@ -1,5 +1,4 @@
 <?php
-
 namespace App\Http\Controllers;
 
 use App\Models\Game;
@@ -12,21 +11,21 @@ class HomeController extends Controller
     {
         // Hero carousel — top rated active games
         $featuredGames = Game::active()->baseGame()
-            ->with(['publisher', 'discounts', 'platforms'])
+            ->with(['publisher', 'discounts', 'platforms', 'ageRating'])
             ->whereNotNull('cover_image_url')
             ->orderByDesc('avg_rating')
             ->limit(6)->get();
 
         // "Temukan Sesuatu yang Baru" — newest active games
         $newGames = Game::active()->baseGame()
-            ->with(['publisher', 'discounts'])
+            ->with(['publisher', 'discounts', 'platforms', 'ageRating'])
             ->whereNotNull('cover_image_url')
             ->orderByDesc('game_id')
             ->limit(10)->get();
 
         // "Diskon Unggulan" — games with active discounts
         $discountedGames = Game::active()->baseGame()
-            ->with(['publisher', 'discounts'])
+            ->with(['publisher', 'discounts', 'platforms', 'ageRating'])
             ->whereNotNull('cover_image_url')
             ->whereHas('discounts', function ($q) {
                 $q->where('is_active', true)
@@ -39,7 +38,7 @@ class HomeController extends Controller
         // Fallback jika belum ada diskon (dev awal)
         if ($discountedGames->isEmpty()) {
             $discountedGames = Game::active()->baseGame()
-                ->with(['publisher', 'discounts'])
+                ->with(['publisher', 'discounts', 'platforms', 'ageRating'])
                 ->whereNotNull('cover_image_url')
                 ->orderByDesc('avg_rating')
                 ->limit(10)->get();
@@ -47,7 +46,7 @@ class HomeController extends Controller
 
         // "Game Gratis" section
         $freeGames = Game::active()->free()
-            ->with(['publisher'])
+            ->with(['publisher', 'platforms', 'ageRating'])
             ->whereNotNull('cover_image_url')
             ->inRandomOrder()
             ->limit(4)->get();

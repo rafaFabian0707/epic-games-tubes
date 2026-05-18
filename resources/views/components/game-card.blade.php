@@ -7,7 +7,7 @@
     <a href="{{ route('game.show', $game->game_id) }}" class="block">
 
         {{-- Cover image --}}
-        <div class="relative overflow-hidden aspect-2/3">
+        <div class="relative overflow-hidden aspect-[3/4]">
             @if($game->cover_image_url)
             <img src="{{ $game->cover_image_url }}" alt="{{ $game->title }}"
                  class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
@@ -43,14 +43,45 @@
                 {{ $game->publisher?->name ?? 'Unknown Publisher' }}
             </p>
 
-            {{-- Platform badges --}}
-            @if($game->relationLoaded('platforms') && $game->platforms->count())
-            <div class="flex gap-1 flex-wrap mb-2">
-                @foreach($game->platforms as $platform)
-                <span class="text-gray-600 text-xs bg-gray-800 px-1.5 py-0.5 rounded">
-                    {{ $platform->platform }}
+            {{-- Platform badges + Age Rating dalam satu baris --}}
+            @php
+                $hasPlatforms = $game->relationLoaded('platforms') && $game->platforms->count();
+                $hasAge       = $game->relationLoaded('ageRating') && $game->ageRating;
+            @endphp
+
+            @if($hasPlatforms || $hasAge)
+            <div class="flex items-center justify-between gap-1 mb-2">
+
+                {{-- Platform badges (kiri) --}}
+                <div class="flex gap-1 flex-wrap">
+                    @if($hasPlatforms)
+                        @foreach($game->platforms as $platform)
+                        <span class="text-gray-600 text-xs bg-gray-800 px-1.5 py-0.5 rounded">
+                            {{ $platform->platform }}
+                        </span>
+                        @endforeach
+                    @endif
+                </div>
+
+                {{-- Age Rating badge (kanan) --}}
+                @if($hasAge)
+                @php
+                    $ageColor = match(strtoupper($game->ageRating->age)) {
+                        'E'      => 'border-green-600 text-green-500',
+                        'E10+'   => 'border-green-500 text-green-400',
+                        'T'      => 'border-yellow-600 text-yellow-500',
+                        'M'      => 'border-red-600 text-red-500',
+                        'AO'     => 'border-red-800 text-red-600',
+                        'RP'     => 'border-gray-500 text-gray-400',
+                        default  => 'border-gray-600 text-gray-400',
+                    };
+                @endphp
+                <span class="flex-shrink-0 border {{ $ageColor }} text-xs font-bold px-1.5 py-0.5 rounded leading-none"
+                      title="{{ $game->ageRating->desc }}">
+                    {{ strtoupper($game->ageRating->age) }}
                 </span>
-                @endforeach
+                @endif
+
             </div>
             @endif
 
