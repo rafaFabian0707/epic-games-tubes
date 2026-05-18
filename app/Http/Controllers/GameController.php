@@ -9,152 +9,321 @@ use App\Models\Platform;
 use Illuminate\Http\Request;
 
 /**
- * GameController — Mengelola tampilan katalog & detail game (Guest + User)
+ * GameController
  *
- * Semua method di sini bersifat READ-ONLY dari sisi Laravel.
- * Operasi tulis (beli, wishlist) ditangani controller lain.
+ * Mengelola:
+ * - Browse game (/jelajahi)
+ * - Store (/store)
+ * - Search
+ * - Detail game
  */
 class GameController extends Controller
 {
     // =========================================================
-    // JELAJAHI — Halaman browse /jelajahi
+    // JELAJAHI — /jelajahi
     // =========================================================
 
     public function jelajahi(Request $request)
     {
         $query = Game::active()
-            ->with(['publisher', 'discounts', 'genres', 'platforms', 'ageRating'])
+            ->with([
+                'publisher',
+                'discounts',
+                'genres',
+                'platforms',
+                'ageRating',
+            ])
             ->whereNotNull('cover_image_url');
 
-        // --- Filter: game_type ---
+        // =====================================================
+        // FILTER: GAME TYPE
+        // =====================================================
+
         if ($request->filled('type') && $request->type !== 'semua') {
+
             $query->where('game_type', $request->type);
         }
 
-        // --- Filter: Genre ---
+        // =====================================================
+        // FILTER: GENRE
+        // =====================================================
+
         if ($request->filled('genre')) {
-            $query->whereHas('genres', fn ($q) => $q->where('genre_id', $request->genre));
+
+            $query->whereHas('genres', function ($q) use ($request) {
+
+                $q->where('genres.genre_id', $request->genre);
+            });
         }
 
-        // --- Filter: Platform ---
+        // =====================================================
+        // FILTER: PLATFORM
+        // =====================================================
+
         if ($request->filled('platform')) {
-            $query->whereHas('platforms', fn ($q) => $q->where('platform_id', $request->platform));
+
+            $query->whereHas('platforms', function ($q) use ($request) {
+
+                $q->where('platform.platform_id', $request->platform);
+            });
         }
 
-        // --- Filter: Harga ---
+        // =====================================================
+        // FILTER: PRICE
+        // =====================================================
+
         if ($request->filled('price')) {
+
             match ($request->price) {
-                'free'       => $query->where('base_price', 0),
-                'discount'   => $query->whereHas('discounts', fn ($q) =>
-                                    $q->where('is_active', true)
-                                      ->where('start_date', '<=', now())
-                                      ->where('end_date', '>=', now())),
-                'under150'   => $query->where('base_price', '<=', 150000)->where('base_price', '>', 0),
-                'under300'   => $query->where('base_price', '<=', 300000)->where('base_price', '>', 0),
-                default      => null,
+
+                'free' =>
+
+                    $query->where('base_price', 0),
+
+                'discount' =>
+
+                    $query->whereHas('discounts', function ($q) {
+
+                        $q->where('is_active', true)
+                            ->where('start_date', '<=', now())
+                            ->where('end_date', '>=', now());
+                    }),
+
+                'under150' =>
+
+                    $query->where('base_price', '<=', 150000)
+                        ->where('base_price', '>', 0),
+
+                'under300' =>
+
+                    $query->where('base_price', '<=', 300000)
+                        ->where('base_price', '>', 0),
+
+                default => null,
             };
         }
 
-        // --- Sort ---
+        // =====================================================
+        // SORTING
+        // =====================================================
+
         match ($request->get('sort', 'newest')) {
-            'price_asc'  => $query->orderBy('base_price', 'asc'),
-            'price_desc' => $query->orderBy('base_price', 'desc'),
-            'rating'     => $query->orderByDesc('avg_rating'),
-            'name'       => $query->orderBy('title', 'asc'),
-            default      => $query->orderByDesc('game_id'),    // newest
+
+            'price_asc' =>
+
+                $query->orderBy('base_price', 'asc'),
+
+            'price_desc' =>
+
+                $query->orderBy('base_price', 'desc'),
+
+            'rating' =>
+
+                $query->orderByDesc('avg_rating'),
+
+            'name' =>
+
+                $query->orderBy('title', 'asc'),
+
+            default =>
+
+                $query->orderByDesc('game_id'),
         };
 
-        $games     = $query->paginate(20)->withQueryString();
-        $genres    = Genre::orderBy('name')->get();
+        // =====================================================
+        // PAGINATION
+        // =====================================================
+
+        $games = $query
+            ->paginate(20)
+            ->withQueryString();
+
+        // =====================================================
+        // FILTER DATA
+        // =====================================================
+
+        $genres = Genre::orderBy('name')->get();
+
         $platforms = Platform::orderBy('platform')->get();
 
-        return view('jelajahi', compact('games', 'genres', 'platforms'));
+        // =====================================================
+        // RETURN VIEW
+        // =====================================================
+
+        return view('jelajahi', compact(
+            'games',
+            'genres',
+            'platforms'
+        ));
     }
 
     // =========================================================
-    // INDEX — Halaman katalog /store
+    // STORE — /store
     // =========================================================
 
     public function index(Request $request)
     {
         $query = Game::active()
-            ->with(['publisher', 'discounts', 'platforms', 'ageRating'])
-            ->baseGame();
+            ->baseGame()
+            ->with([
+                'publisher',
+                'discounts',
+                'platforms',
+                'ageRating',
+            ]);
 
-        // --- Filter: Genre ---
+        // =====================================================
+        // FILTER: GENRE
+        // =====================================================
+
         if ($request->filled('genre')) {
+
             $query->whereHas('genres', function ($q) use ($request) {
-                $q->where('genre_id', $request->genre);
+
+                $q->where('genres.genre_id', $request->genre);
             });
         }
 
-        // --- Filter: Feature ---
+        // =====================================================
+        // FILTER: FEATURE
+        // =====================================================
+
         if ($request->filled('feature')) {
+
             $query->whereHas('features', function ($q) use ($request) {
-                $q->where('feature_id', $request->feature);
+
+                $q->where('features.feature_id', $request->feature);
             });
         }
 
-        // --- Filter: Platform (BARU v4.0) ---
+        // =====================================================
+        // FILTER: PLATFORM
+        // =====================================================
+
         if ($request->filled('platform')) {
+
             $query->whereHas('platforms', function ($q) use ($request) {
-                $q->where('platform_id', $request->platform);
+
+                $q->where('platform.platform_id', $request->platform);
             });
         }
 
-        // --- Filter: Harga ---
+        // =====================================================
+        // FILTER: PRICE
+        // =====================================================
+
         if ($request->filled('price')) {
+
             match ($request->price) {
-                'free'  => $query->free(),
-                'under10'  => $query->where('base_price', '<=', 10)->where('base_price', '>', 0),
-                'under30'  => $query->where('base_price', '<=', 30)->where('base_price', '>', 0),
-                'under60'  => $query->where('base_price', '<=', 60)->where('base_price', '>', 0),
+
+                'free' =>
+
+                    $query->free(),
+
+                'under10' =>
+
+                    $query->where('base_price', '<=', 10)
+                        ->where('base_price', '>', 0),
+
+                'under30' =>
+
+                    $query->where('base_price', '<=', 30)
+                        ->where('base_price', '>', 0),
+
+                'under60' =>
+
+                    $query->where('base_price', '<=', 60)
+                        ->where('base_price', '>', 0),
+
                 default => null,
             };
         }
 
-        // --- Filter: Info badge (First_Run, Now_On_Epic, Trial_Available) ---
+        // =====================================================
+        // FILTER: INFO BADGE
+        // =====================================================
+
         if ($request->filled('info')) {
+
             $query->where('info', $request->info);
         }
 
-        // --- Sort ---
+        // =====================================================
+        // SORTING
+        // =====================================================
+
         match ($request->get('sort', 'newest')) {
-            'price_asc'  => $query->orderBy('base_price', 'asc'),
-            'price_desc' => $query->orderBy('base_price', 'desc'),
-            'rating'     => $query->orderByDesc('avg_rating'),
-            'name'       => $query->orderBy('title', 'asc'),
-            default      => $query->orderByDesc('created_at'),   // newest
+
+            'price_asc' =>
+
+                $query->orderBy('base_price', 'asc'),
+
+            'price_desc' =>
+
+                $query->orderBy('base_price', 'desc'),
+
+            'rating' =>
+
+                $query->orderByDesc('avg_rating'),
+
+            'name' =>
+
+                $query->orderBy('title', 'asc'),
+
+            default =>
+
+                $query->orderByDesc('created_at'),
         };
 
-        $games    = $query->paginate(24)->withQueryString();
-        $genres   = Genre::orderBy('name')->get();
+        // =====================================================
+        // PAGINATION
+        // =====================================================
+
+        $games = $query
+            ->paginate(24)
+            ->withQueryString();
+
+        // =====================================================
+        // FILTER DATA
+        // =====================================================
+
+        $genres = Genre::orderBy('name')->get();
+
         $features = Feature::orderBy('name')->get();
+
         $platforms = Platform::orderBy('platform')->get();
 
-        return view('games.index', compact('games', 'genres', 'features', 'platforms'));
+        // =====================================================
+        // RETURN VIEW
+        // =====================================================
+
+        return view('games.index', compact(
+            'games',
+            'genres',
+            'features',
+            'platforms'
+        ));
     }
 
     // =========================================================
-    // SEARCH — /store/search?q=keyword
+    // SEARCH — /store/search
     // =========================================================
 
     public function search(Request $request)
     {
         $keyword = trim($request->get('q', ''));
-        $games   = collect();
+
+        $games = collect();
 
         if (strlen($keyword) >= 2) {
-            /**
-             * PENTING: FULLTEXT index di v4.0 menggunakan kolom:
-             *   title, main_desc, desc
-             * BUKAN: title, description (kolom description sudah DIHAPUS)
-             *
-             * Pastikan migration sudah menjalankan:
-             *   $table->fullText(['title', 'main_desc', 'desc']);
-             */
+
             $games = Game::active()
-                ->with(['publisher', 'discounts', 'platforms', 'ageRating'])
+                ->with([
+                    'publisher',
+                    'discounts',
+                    'platforms',
+                    'ageRating',
+                ])
                 ->whereRaw(
                     'MATCH(title, main_desc, `desc`) AGAINST(? IN BOOLEAN MODE)',
                     [$keyword . '*']
@@ -163,19 +332,18 @@ class GameController extends Controller
                 ->get();
         }
 
-        return view('games.search', compact('games', 'keyword'));
+        return view('games.search', compact(
+            'games',
+            'keyword'
+        ));
     }
 
     // =========================================================
-    // SHOW — Halaman detail /game/{id}
+    // SHOW — /game/{id}
     // =========================================================
 
     public function show(int $id)
     {
-        /**
-         * Eager load semua relasi yang dibutuhkan halaman detail.
-         * Urutan ini penting untuk menghindari N+1 query.
-         */
         $game = Game::active()
             ->with([
                 'publisher',
@@ -183,30 +351,46 @@ class GameController extends Controller
                 'genres',
                 'features',
                 'tags',
-                'platforms',           // BARU v4.0 — platform badges
-                'ageRating',           // BARU v4.0 — age rating
+                'platforms',
+                'ageRating',
                 'systemRequirements',
                 'achievements',
                 'discounts',
                 'socialLinks',
                 'criticReviews',
-                'children' => fn ($q) => $q->where('is_active', true)
-                                           ->with('discounts'),
+
+                'children' => fn ($q) =>
+
+                    $q->where('is_active', true)
+                        ->with('discounts'),
             ])
             ->where('game_id', $id)
             ->firstOrFail();
 
-        // Ambil game terkait berdasarkan genre yang sama (max 6)
+        // =====================================================
+        // RELATED GAMES
+        // =====================================================
+
         $relatedGames = Game::active()
-            ->with(['publisher', 'discounts'])
+            ->with([
+                'publisher',
+                'discounts',
+            ])
             ->whereHas('genres', function ($q) use ($game) {
-                $q->whereIn('genres.genre_id', $game->genres->pluck('genre_id')); // ← tambah prefix tabel
+
+                $q->whereIn(
+                    'genres.genre_id',
+                    $game->genres->pluck('genre_id')
+                );
             })
             ->where('game_id', '!=', $id)
             ->inRandomOrder()
             ->limit(6)
             ->get();
 
-        return view('games.show', compact('game', 'relatedGames'));
+        return view('games.show', compact(
+            'game',
+            'relatedGames'
+        ));
     }
 }
