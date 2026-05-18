@@ -15,6 +15,26 @@
     $isActive = fn (array $patterns) => request()->routeIs(...$patterns);
 @endphp
 
+<style>
+    .epic-mask-logo {
+        width: 20px;
+        height: 20px;
+        flex-shrink: 0;
+        display: inline-block;
+        background-color: currentColor;
+
+        mask-image: var(--logo);
+        mask-size: contain;
+        mask-repeat: no-repeat;
+        mask-position: center;
+
+        -webkit-mask-image: var(--logo);
+        -webkit-mask-size: contain;
+        -webkit-mask-repeat: no-repeat;
+        -webkit-mask-position: center;
+    }
+</style>
+
 {{-- =========================
      TOP NAVBAR
 ========================= --}}
@@ -40,116 +60,155 @@
                 </summary>
 
                 {{-- DROPDOWN PANEL --}}
-                <div class="epic-dropdown-panel absolute left-0 top-full mt-4 w-[580px] overflow-hidden rounded-xl border border-white/10 bg-[#31343b] shadow-[0_24px_80px_rgba(0,0,0,0.65)]">
+                <div class="epic-dropdown-panel absolute left-0 top-full mt-3 w-[500px] overflow-hidden rounded-xl border border-white/10 bg-[#31343b] shadow-[0_24px_80px_rgba(0,0,0,0.65)]">
                     <div class="grid grid-cols-2">
 
                         {{-- LEFT COLUMN --}}
-                        <div class="border-r border-white/25 bg-gradient-to-br from-[#30383c] to-[#2d3638]">
+                        <div class="border-r border-white/25 bg-gradient-to-br-[#363a48] ">
 
                             {{-- MAINKAN --}}
-                            <div class="border-b border-white/10 p-8">
+                            <div class="border-b border-white/10 p-6">
                                 <h3 class="mb-5 text-lg font-bold text-white">
                                     Mainkan
                                 </h3>
 
-                                <div class="space-y-4">
-                                    <a href="#" class="dropdown-menu-item">
-                                        <span class="dropdown-icon">F</span>
-                                        <span>Fortnite</span>
+                                <div class="space-y-2">
+                                    <a href="#" class="flex items-center gap-3 rounded-md px-2 py-1 text-sm text-gray-300 hover:bg-white/7 hover:text-white transition-colors">
+                                        <span
+                                            class="epic-mask-logo"
+                                            style="--logo: url('https://cms-assets.unrealengine.com/AVzjeqAbLRKi3W5jq0CAvz/cmb81xhrr3wmp07o53dbxkm7q');"
+                                        ></span>
+                                        Fortnite
                                     </a>
-
-                                    <a href="#" class="dropdown-menu-item">
-                                        <span class="dropdown-icon">🚀</span>
-                                        <span>Rocket League</span>
+                                    <a href="#" class="flex items-center gap-3 rounded-md px-2 py-1 text-sm text-gray-300 hover:bg-white/7 hover:text-white transition-colors">
+                                        <span
+                                            class="epic-mask-logo"
+                                            style="--logo: url('https://cms-assets.unrealengine.com/AVzjeqAbLRKi3W5jq0CAvz/cmb81xhpu3wls07o5g6joe4ag');"
+                                        ></span>
+                                        Rocket League
                                     </a>
-
-                                    <a href="#" class="dropdown-menu-item">
-                                        <span class="dropdown-icon">☻</span>
-                                        <span>Fall Guys</span>
+                                    <a href="#" class="flex items-center gap-3 rounded-md px-2 py-1 text-sm text-gray-300 hover:bg-white/7 hover:text-white transition-colors">
+                                        <span
+                                            class="epic-mask-logo"
+                                            style="--logo: url('https://cms-assets.unrealengine.com/AVzjeqAbLRKi3W5jq0CAvz/cmb81xho03tqx07mzwb57nha7');"
+                                        ></span>
+                                        Fall Guys
                                     </a>
+                                    
                                 </div>
                             </div>
-
+                            
                             {{-- TEMUKAN --}}
-                            <div class="p-8">
+                            <div class="p-6">
                                 <h3 class="mb-5 text-lg font-bold text-white">
                                     Temukan
                                 </h3>
-
-                                <div class="space-y-4">
-                                    <a href="{{ route('home') }}" class="dropdown-menu-item">
-                                        <span class="dropdown-icon">▣</span>
-                                        <span>Epic Games Store</span>
+                                
+                                <div class="space-y-2">
+                                    <a href="#" class="flex items-center gap-3 rounded-md px-2 py-2 text-sm text-gray-300 hover:bg-white/7 hover:text-white transition-colors">
+                                        <span
+                                            class="epic-mask-logo"
+                                            style="--logo: url('https://cms-assets.unrealengine.com/AVzjeqAbLRKi3W5jq0CAvz/cmb81xhxk3ttl07mzk4qbhiy1');"
+                                        ></span>
+                                        Epic Games Store
                                     </a>
 
-                                    <a href="#" class="dropdown-menu-item">
-                                        <span class="dropdown-icon">◒</span>
-                                        <span>Fab</span>
+                                    <a href="#" class="flex items-center gap-3 rounded-md px-2 py-2 text-sm text-gray-300 hover:bg-white/7 hover:text-white transition-colors">
+                                        <span
+                                            class="epic-mask-logo"
+                                            style="--logo: url('https://cms-assets.unrealengine.com/AVzjeqAbLRKi3W5jq0CAvz/cmb81xhp63wlm07o59mtdawan');"
+                                        ></span>
+                                        Fab
                                     </a>
 
-                                    <a href="#" class="dropdown-menu-item">
-                                        <span class="dropdown-icon">◉</span>
-                                        <span>Sketchfab</span>
+                                    <a href="#" class="flex items-center gap-3 rounded-md px-2 py-2 text-sm text-gray-300 hover:bg-white/7 hover:text-white transition-colors">
+                                        <span
+                                            class="epic-mask-logo"
+                                            style="--logo: url('https://cms-assets.unrealengine.com/AVzjeqAbLRKi3W5jq0CAvz/cmb81xhrd3wm907o5ut7srvf8');"
+                                        ></span>
+                                        Sketchfab
                                     </a>
-
-                                    <a href="#" class="dropdown-menu-item">
-                                        <span class="dropdown-icon">◢</span>
-                                        <span>ArtStation</span>
+                                    
+                                    <a href="#" class="flex items-center gap-3 rounded-md px-1 py-2 text-sm text-gray-300 hover:bg-white/7 hover:text-white transition-colors">
+                                        <span
+                                            class="epic-mask-logo"
+                                            style="--logo: url('https://cms-assets.unrealengine.com/AVzjeqAbLRKi3W5jq0CAvz/cmb81xhv53tta07mziqwq81xo');"
+                                        ></span>
+                                        ArtStation
                                     </a>
                                 </div>
                             </div>
                         </div>
 
                         {{-- RIGHT COLUMN --}}
-                        <div class="bg-gradient-to-br from-[#363a48] to-[#463d59] p-8">
+                        <div class="bg-gradient-to-br-[#363a48] p-6">
                             <h3 class="mb-5 text-lg font-bold text-white">
                                 Buat
                             </h3>
 
-                            <div class="space-y-4">
-                                <a href="#" class="dropdown-menu-item">
-                                    <span class="dropdown-icon">U</span>
-                                    <span>Unreal Engine</span>
+                            <div class="space-y-2">
+                                <a href="#" class="flex items-center gap-3 rounded-md px-1 py-2 text-sm text-gray-300 hover:bg-white/7 hover:text-white transition-colors">
+                                    <span
+                                        class="epic-mask-logo"
+                                        style="--logo: url('https://cms-assets.unrealengine.com/AVzjeqAbLRKi3W5jq0CAvz/cmb81xhrq3wmn07o5xiqxc9fk');"
+                                    ></span>
+                                    Unreal Engine
                                 </a>
-
-                                <a href="#" class="dropdown-menu-item">
-                                    <span class="dropdown-icon">F</span>
-                                    <span>Buat di Fortnite</span>
+                                <a href="#" class="flex items-center gap-3 rounded-md px-1 py-2 text-sm text-gray-300 hover:bg-white/7 hover:text-white transition-colors">
+                                    <span
+                                        class="epic-mask-logo"
+                                        style="--logo: url('https://cms-assets.unrealengine.com/AVzjeqAbLRKi3W5jq0CAvz/cmb81xhrr3wmp07o53dbxkm7q');"
+                                    ></span>
+                                    Buat di Fortnite
                                 </a>
-
-                                <a href="#" class="dropdown-menu-item">
-                                    <span class="dropdown-icon">◇</span>
-                                    <span>MetaHuman</span>
+                                <a href="#" class="flex items-center gap-3 rounded-md px-1 py-2 text-sm text-gray-300 hover:bg-white/7 hover:text-white transition-colors">
+                                    <span
+                                        class="epic-mask-logo"
+                                        style="--logo: url('https://cms-assets.unrealengine.com/AVzjeqAbLRKi3W5jq0CAvz/cmb81xhug3tsy07mzvdqx61yp');"
+                                    ></span>
+                                    MetaHuman
                                 </a>
-
-                                <a href="#" class="dropdown-menu-item">
-                                    <span class="dropdown-icon">◒</span>
-                                    <span>Twinmotion</span>
+                                <a href="#" class="flex items-center gap-3 rounded-md px-1 py-2 text-sm text-gray-300 hover:bg-white/7 hover:text-white transition-colors">
+                                    <span
+                                        class="epic-mask-logo"
+                                        style="--logo: url('https://cms-assets.unrealengine.com/AVzjeqAbLRKi3W5jq0CAvz/cmb81xhu83wn807o5swbsaol6');"
+                                    ></span>
+                                    Twinmotion
                                 </a>
-
-                                <a href="#" class="dropdown-menu-item">
-                                    <span class="dropdown-icon">◈</span>
-                                    <span>RealityScan</span>
+                                <a href="#" class="flex items-center gap-3 rounded-md px-1 py-2 text-sm text-gray-300 hover:bg-white/7 hover:text-white transition-colors">
+                                    <span
+                                        class="epic-mask-logo"
+                                        style="--logo: url('https://cms-assets.unrealengine.com/AVzjeqAbLRKi3W5jq0CAvz/cmb81xho33tqz07mz0sqvsu4j');"
+                                    ></span>
+                                    RealityScan
                                 </a>
-
-                                <a href="#" class="dropdown-menu-item">
-                                    <span class="dropdown-icon">▣</span>
-                                    <span>Epic Online Services</span>
+                                <a href="#" class="flex items-center gap-3 rounded-md px-1 py-2 text-sm text-gray-300 hover:bg-white/7 hover:text-white transition-colors">
+                                    <span
+                                        class="epic-mask-logo"
+                                        style="--logo: url('https://cms-assets.unrealengine.com/AVzjeqAbLRKi3W5jq0CAvz/cmb81xhxk3ttl07mzk4qbhiy1');"
+                                    ></span>
+                                    Epic Online Services
                                 </a>
-
-                                <a href="#" class="dropdown-menu-item">
-                                    <span class="dropdown-icon">▤</span>
-                                    <span>Publikasikan di Epic Games Store</span>
+                                <a href="#" class="flex items-center gap-3 rounded-md px-1 py-2 text-sm text-gray-300 hover:bg-white/7 hover:text-white transition-colors">
+                                    <span
+                                        class="epic-mask-logo"
+                                        style="--logo: url('https://cms-assets.unrealengine.com/AVzjeqAbLRKi3W5jq0CAvz/cmb81xhxk3ttl07mzk4qbhiy1');"
+                                    ></span>
+                                    Publikasikan di Epic Games Store
                                 </a>
-
-                                <a href="#" class="dropdown-menu-item">
-                                    <span class="dropdown-icon">◌</span>
-                                    <span>Kids Web Services</span>
+                                <a href="#" class="flex items-center gap-3 rounded-md px-1 py-2 text-sm text-gray-300 hover:bg-white/7 hover:text-white transition-colors">
+                                    <span
+                                        class="epic-mask-logo"
+                                        style="--logo: url('https://cms-assets.unrealengine.com/AVzjeqAbLRKi3W5jq0CAvz/cmb81xhoq3tra07mzkzedd1td');"
+                                    ></span>
+                                    Kids Web Services    
                                 </a>
-
-                                <a href="#" class="dropdown-menu-item">
-                                    <span class="dropdown-icon">▦</span>
-                                    <span>Komunitas Pengembang</span>
+                                <a href="#" class="flex items-center gap-3 rounded-md px-1 py-2 text-sm text-gray-300 hover:bg-white/7 hover:text-white transition-colors">
+                                    <span
+                                        class="epic-mask-logo"
+                                        style="--logo: url('https://cms-assets.unrealengine.com/AVzjeqAbLRKi3W5jq0CAvz/cmb81xhxk3ttl07mzk4qbhiy1');"
+                                    ></span>
+                                    Komunitas Pengembang
                                 </a>
                             </div>
                         </div>
