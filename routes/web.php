@@ -14,12 +14,20 @@ use App\Http\Controllers\CartController;
 use App\Http\Controllers\CheckoutController;
 use App\Http\Controllers\LibraryController;
 use App\Http\Controllers\WishlistController;
+<<<<<<< HEAD
 
 // =========================================================
 // ADMIN CONTROLLERS
 // =========================================================
 
 use App\Http\Controllers\Admin\DashboardController as AdminDashboardController;
+=======
+use App\Http\Controllers\AuthController;
+use App\Http\Controllers\NewsController;
+use App\Http\Controllers\HomeController;
+use App\Http\Controllers\Admin\AdminAuthController;
+use App\Http\Controllers\Admin\DashboardController as AdminDashboard;
+>>>>>>> a71ee67145e6d53e035fc3b44ef8850f28a85e1b
 use App\Http\Controllers\Admin\GameController as AdminGameController;
 use App\Http\Controllers\Admin\PlatformController as AdminPlatformController;
 use App\Http\Controllers\Admin\NewsController as AdminNewsController;
@@ -53,7 +61,7 @@ Route::get('/news/{id}', [NewsController::class, 'show'])
     ->name('news.show');
 
 // =========================================================
-// AUTH ROUTES
+// USER AUTH ROUTES
 // =========================================================
 
 Route::middleware('guest')->group(function () {
@@ -86,8 +94,13 @@ Route::middleware('auth')->group(function () {
     Route::get('/cart', [CartController::class, 'index'])
         ->name('cart.index');
 
+<<<<<<< HEAD
     Route::post('/cart/add', [CartController::class, 'add'])
         ->name('cart.add');
+=======
+    // Library
+    Route::get('/library', [LibraryController::class, 'index'])->name('library.index');
+>>>>>>> a71ee67145e6d53e035fc3b44ef8850f28a85e1b
 
     Route::delete('/cart/{gameId}', [CartController::class, 'remove'])
         ->name('cart.remove');
@@ -132,7 +145,28 @@ Route::middleware('auth')->group(function () {
 });
 
 // =========================================================
+<<<<<<< HEAD
 // ADMIN ROUTES
+=======
+// ADMIN AUTH — Login/logout halaman admin (TANPA middleware admin)
+// =========================================================
+
+Route::prefix('/admin')->name('admin.')->group(function () {
+
+    // Halaman login admin (akses oleh guest atau user biasa)
+    Route::get('/login', [AdminAuthController::class, 'showLogin'])->name('login');
+    Route::post('/login', [AdminAuthController::class, 'login'])->name('login.submit');
+
+    // Logout admin
+    Route::post('/logout', [AdminAuthController::class, 'logout'])
+        ->middleware('auth')
+        ->name('logout');
+
+});
+
+// =========================================================
+// ADMIN ROUTES — Harus login + is_admin = true
+>>>>>>> a71ee67145e6d53e035fc3b44ef8850f28a85e1b
 // =========================================================
 
 Route::middleware(['auth', 'admin'])
