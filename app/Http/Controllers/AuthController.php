@@ -11,6 +11,11 @@ class AuthController extends Controller
 {
     public function showLogin()
     {
+        // Jika sudah login sebagai admin, langsung ke dashboard admin
+        if (Auth::check() && Auth::user()->is_admin) {
+            return redirect()->route('admin.dashboard');
+        }
+
         return view('auth.login');
     }
 
@@ -23,6 +28,14 @@ class AuthController extends Controller
 
         if (Auth::attempt($credentials, $request->boolean('remember'))) {
             $request->session()->regenerate();
+
+            // Jika admin → langsung ke admin dashboard
+            if (Auth::user()->is_admin) {
+                return redirect()->route('admin.dashboard')
+                    ->with('success', 'Selamat datang di Admin Panel, ' . Auth::user()->username . '!');
+            }
+
+            // User biasa → ke home
             return redirect()->intended(route('home'));
         }
 
@@ -39,10 +52,10 @@ class AuthController extends Controller
     public function register(Request $request)
     {
         $data = $request->validate([
-            'username' => ['required', 'string', 'max:50', 'unique:users,username'],
-            'email'    => ['required', 'email', 'max:100', 'unique:users,email'],
-            'password' => ['required', 'string', 'min:8', 'confirmed'],
-            'full_name'=> ['nullable', 'string', 'max:100'],
+            'username'  => ['required', 'string', 'max:50', 'unique:users,username'],
+            'email'     => ['required', 'email', 'max:100', 'unique:users,email'],
+            'password'  => ['required', 'string', 'min:8', 'confirmed'],
+            'full_name' => ['nullable', 'string', 'max:100'],
         ]);
 
         $user = User::create([

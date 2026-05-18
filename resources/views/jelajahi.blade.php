@@ -438,7 +438,7 @@
                             'edition'    => 'Edisi Game',
                             'aplikasi'   => 'Aplikasi',
                             'editor'     => 'Editor',
-                            'experience' => 'Pengalaman',
+                            'pengalaman' => 'Pengalaman',
                         ] as $val => $label)
                         <a href="{{ route('jelajahi', array_merge(request()->except('type','page'), request('type') === $val ? [] : ['type' => $val])) }}"
                            class="flex items-center gap-3 group cursor-pointer hover:text-white transition-colors">

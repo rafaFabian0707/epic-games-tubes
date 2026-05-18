@@ -19,6 +19,7 @@ use App\Http\Controllers\WishlistController;
 // ADMIN CONTROLLERS
 // =========================================================
 
+use App\Http\Controllers\Admin\AdminAuthController;
 use App\Http\Controllers\Admin\DashboardController as AdminDashboardController;
 use App\Http\Controllers\Admin\GameController as AdminGameController;
 use App\Http\Controllers\Admin\PlatformController as AdminPlatformController;
@@ -109,8 +110,6 @@ Route::middleware('auth')->group(function () {
     // LIBRARY
     // =========================
 
-    // Library hanya READ
-    // Data diisi trigger MySQL otomatis
     Route::get('/library', [LibraryController::class, 'index'])
         ->name('library.index');
 
@@ -132,6 +131,23 @@ Route::middleware('auth')->group(function () {
 });
 
 // =========================================================
+// ADMIN AUTH
+// =========================================================
+
+Route::prefix('/admin')->name('admin.')->group(function () {
+
+    Route::get('/login', [AdminAuthController::class, 'showLogin'])
+        ->name('login');
+
+    Route::post('/login', [AdminAuthController::class, 'login'])
+        ->name('login.submit');
+
+    Route::post('/logout', [AdminAuthController::class, 'logout'])
+        ->middleware('auth')
+        ->name('logout');
+});
+
+// =========================================================
 // ADMIN ROUTES
 // =========================================================
 
@@ -140,7 +156,6 @@ Route::middleware(['auth', 'admin'])
     ->name('admin.')
     ->group(function () {
 
-        // Redirect /admin -> /admin/dashboard
         Route::redirect('/', '/admin/dashboard');
 
         // =========================
