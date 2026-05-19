@@ -43,21 +43,6 @@
         @yield('content')
     </main>
 
-    {{-- ===== FOOTER ===== --}}
-    <footer class="bg-gray-900 border-t border-gray-800 mt-16">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-            <div class="flex flex-col md:flex-row items-center justify-between gap-4">
-                <div class="flex items-center gap-2 text-gray-500">
-                    <svg class="w-5 h-5 text-blue-600" fill="currentColor" viewBox="0 0 24 24">
-                        <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/>
-                    </svg>
-                    <p class="text-sm">© 2024 Epic Games Store Replica — Tugas Besar Sistem Basis Data</p>
-                </div>
-                <p class="text-gray-600 text-xs">Laravel · MySQL 8 · Tailwind CSS · USU</p>
-            </div>
-        </div>
-    </footer>
-
     @stack('scripts')
     @include('components.footer')
 </body>

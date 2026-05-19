@@ -20,15 +20,15 @@
     };
 @endphp
 
-<div class="flex gap-4 bg-gray-900/60 border border-gray-800 rounded-2xl p-4 hover:border-gray-600 hover:bg-gray-900/80 transition-all duration-200 group">
+<div class="mx-6 flex gap-4 bg-gray-100/10 border border-gray-900/10 rounded-2xl p-6 hover:border-gray-600 hover:bg-gray-200/10 transition-all duration-200 group">
     <a href="{{ route('game.show', $item->game_id) }}"
-       class="w-36 aspect-[3/2] rounded-lg overflow-hidden flex-shrink-0 bg-gray-800">
+       class="w-36 aspect-[3/2] rounded-lg overflow-hidden flex-shrink-0 bg-gray-200">
         @if($item->cover_image_url)
             <img src="{{ $item->cover_image_url }}"
                  alt="{{ $item->title }}"
                  class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300">
         @else
-            <div class="w-full h-full bg-gray-800"></div>
+            <div class="w-full h-full bg-gray-500"></div>
         @endif
     </a>
 
@@ -38,7 +38,7 @@
         </p>
 
         <a href="{{ route('game.show', $item->game_id) }}">
-            <h4 class="text-white font-bold text-base mb-1 group-hover:text-blue-300 transition-colors leading-snug">
+            <h4 class="text-white font-bold text-base mb-1 group-hover:text-gray-300 transition-colors leading-snug">
                 {{ $item->title }}
             </h4>
         </a>
@@ -52,7 +52,7 @@
         <div class="border-t border-gray-800/60 pt-3">
             <div class="flex items-center gap-2 mb-2">
                 @if($activeDiscount)
-                    <span class="bg-blue-600/90 text-white text-xs font-bold px-1.5 py-0.5 rounded">
+                    <span class="bg-gray-600/90 text-white text-xs font-bold px-1.5 py-0.5 rounded">
                         -{{ number_format($discountPct, 0) }}%
                     </span>
 
@@ -83,7 +83,7 @@
                         <input type="hidden" name="game_id" value="{{ $item->game_id }}">
 
                         <button type="submit"
-                                class="w-full bg-blue-500 hover:bg-blue-400 active:scale-95 text-white font-semibold py-2 px-4 rounded-xl text-sm transition-all duration-200">
+                                class="w-full bg-gray-500 hover:bg-blue-400 active:scale-95 text-white font-semibold py-2 px-4 rounded-xl text-sm transition-all duration-200">
                             Add To Cart
                         </button>
                     </form>

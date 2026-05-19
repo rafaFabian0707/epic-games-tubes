@@ -53,7 +53,7 @@
     {{-- ═══════════════════════════════════
          TITLE + RATING + TABS
     ═══════════════════════════════════ --}}
-    <div class="pt-8 pb-0">
+    <div class="pt-8 pb-0 mx-40">
 
         {{-- Title --}}
         <h1 class="text-4xl sm:text-5xl font-extrabold text-white tracking-tight leading-tight mb-3">
@@ -90,10 +90,17 @@
             @endif
 
             {{-- Tag badges (hero, max 3) --}}
-            @foreach($game->tags->take(3) as $tag)
-            <span class="inline-flex items-center gap-1.5 bg-gray-800/70 border border-gray-700/50 text-gray-300 text-xs px-3 py-1.5 rounded-full hover:border-gray-500 transition-colors">
-                <span>{{ $tag->emoji }}</span>
-                <span>{{ $tag->label }}</span>
+            @foreach($game->tags->take(2) as $tag)
+            <span class="inline-flex items-center gap-1.5 text-xs px-3 py-1.5 rounded-full hover:border-gray-500 transition-colors">
+                <div class="w-5 h-5 mx-auto mb-2 flex items-center justify-center">
+                            @if(str_starts_with($tag->emoji, 'http'))
+                                <img src="{{ $tag->emoji }}" alt="{{ $tag->label }}" class="w-9 h-9 object-contain" onerror="this.replaceWith(document.createTextNode('🎮'))">
+                            @else
+                                <span class="text-3xl leading-none">{{ $tag->emoji }}</span>
+                            @endif
+                        </div>
+                        <p class="text-gray-400 text-xs mb-1">This game is</p>
+                        <p class="text-white text-sm font-semibold leading-tight">{{ $tag->label }}</p>
             </span>
             @endforeach
         </div>
@@ -122,7 +129,7 @@
     {{-- ═══════════════════════════════════
          2-COLUMN MAIN LAYOUT
     ═══════════════════════════════════ --}}
-    <div class="flex gap-8 items-start mt-6 pb-16">
+    <div class="flex gap-8 items-start mt-6 pb-16 mx-40">
 
         {{-- ────────────────────────────
              LEFT COLUMN
