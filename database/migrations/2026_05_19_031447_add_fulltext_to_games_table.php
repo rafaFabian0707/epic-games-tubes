@@ -6,7 +6,13 @@ use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
-    public function up(): void
+    /*
+ * SQL equivalent for this migration:
+ * CREATE TABLE `games` (
+ *   FULLTEXT KEY games_search_fulltext (title, main_desc, desc)
+ * );
+ */
+public function up(): void
     {
         Schema::table('games', function (Blueprint $table) {
 

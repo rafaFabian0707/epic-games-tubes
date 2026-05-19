@@ -6,10 +6,14 @@ use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
-    /**
-     * Run the migrations.
-     */
-    public function up(): void
+    /*
+ * SQL equivalent for this migration:
+ * CREATE TABLE `features` (
+ *   feature_id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+ *   name VARCHAR(100) NOT NULL
+ * );
+ */
+public function up(): void
     {
         Schema::create('features', function (Blueprint $table) {
     $table->id('feature_id');

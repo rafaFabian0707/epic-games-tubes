@@ -6,10 +6,20 @@ use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
-    /**
-     * Run the migrations.
-     */
-    public function up(): void
+    /*
+ * SQL equivalent for this migration:
+ * CREATE TABLE `news` (
+ *   news_id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+ *   title VARCHAR(200) NOT NULL,
+ *   cover_url VARCHAR(255) NOT NULL,
+ *   main_content TEXT NULL,
+ *   date VARCHAR(32) NULL,
+ *   publisher TEXT NOT NULL,
+ *   media_url VARCHAR(255) NULL,
+ *   is_active TINYINT(1) NOT NULL DEFAULT 1
+ * );
+ */
+public function up(): void
     {
         Schema::create('news', function (Blueprint $table) {
             $table->id('news_id');

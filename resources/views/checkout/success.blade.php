@@ -76,7 +76,7 @@
                         {{-- Harga beli --}}
                         <div class="flex-shrink-0 text-right">
                             @if ($detail->discount_applied > 0)
-                                <p class="text-xs text-green-400 mb-0.5">-{{ $detail->discount_applied }}%</p>
+                                <p class="text-xs text-green-400 mb-0.5">-{{ $detail->discount_applied }}Rp. </p>
                             @endif
                             <p class="text-white font-semibold text-sm">
                                 @if ($detail->price_at_purchase == 0)

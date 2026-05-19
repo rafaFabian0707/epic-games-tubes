@@ -6,10 +6,15 @@ use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
-    /**
-     * Run the migrations.
-     */
-    public function up(): void
+    /*
+ * SQL equivalent for this migration:
+ * CREATE TABLE `game_tags` (
+ *   game_id BIGINT UNSIGNED NOT NULL, FOREIGN KEY (game_id) REFERENCES games(game_id) ON DELETE CASCADE,
+ *   tag_id BIGINT UNSIGNED NOT NULL, FOREIGN KEY (tag_id) REFERENCES tags(tag_id) ON DELETE CASCADE,
+ *   PRIMARY KEY (game_id, tag_id)
+ * );
+ */
+public function up(): void
     {
         Schema::create('game_tags', function (Blueprint $table) {
 

@@ -135,7 +135,8 @@ class CheckoutController extends Controller
             DB::transaction(function () use ($user, $cartGames, $request) {
 
                 // 1. Isi tabel cart_temp (sementara, per user)
-                //    SP akan membaca ini dan menghapusnya setelah selesai.
+                // SQL equivalent:
+                // DELETE FROM cart_temp WHERE user_id = ?;
                 DB::table('cart_temp')->where('user_id', $user->user_id)->delete();
 
                 $cartRows = $cartGames->map(fn ($game) => [
@@ -145,15 +146,20 @@ class CheckoutController extends Controller
                     'discount_applied' => $game->discount_pct,
                 ])->toArray();
 
+                // SQL equivalent:
+                // INSERT INTO cart_temp (user_id, game_id, price_at_purchase, discount_applied)
+                // VALUES (...), (...), ...;
                 DB::table('cart_temp')->insert($cartRows);
 
                 // 2. Panggil sp_checkout (OUT parameter: transaction_id & result)
+                // SQL equivalent: CALL sp_checkout(?, ?, @tid, @res)
                 DB::statement('CALL sp_checkout(?, ?, @tid, @res)', [
                     $user->user_id,
                     $request->payment_method,
                 ]);
 
                 // 3. Ambil output parameter SP
+                // SQL equivalent: SELECT @tid AS transaction_id, @res AS result;
                 $output = DB::selectOne('SELECT @tid AS transaction_id, @res AS result');
 
                 // 4. Validasi hasil SP

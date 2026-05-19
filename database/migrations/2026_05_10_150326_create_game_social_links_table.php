@@ -6,10 +6,17 @@ use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
-    /**
-     * Run the migrations.
-     */
-    public function up(): void
+    /*
+ * SQL equivalent for this migration:
+ * CREATE TABLE `game_social_links` (
+ *   link_id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+ *   game_id BIGINT UNSIGNED NOT NULL, FOREIGN KEY (game_id) REFERENCES games(game_id) ON DELETE CASCADE,
+ *   platform VARCHAR(50) NOT NULL,
+ *   url VARCHAR(255) NOT NULL,
+ *   created_at TIMESTAMP NULL, updated_at TIMESTAMP NULL
+ * );
+ */
+public function up(): void
     {
         Schema::create('game_social_links', function (Blueprint $table) {
 

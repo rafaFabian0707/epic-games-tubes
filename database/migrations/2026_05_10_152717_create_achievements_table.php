@@ -6,10 +6,20 @@ use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
-    /**
-     * Run the migrations.
-     */
-    public function up(): void
+    /*
+ * SQL equivalent for this migration:
+ * CREATE TABLE `achievements` (
+ *   achievement_id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+ *   game_id BIGINT UNSIGNED NOT NULL, FOREIGN KEY (game_id) REFERENCES games(game_id) ON DELETE CASCADE,
+ *   name VARCHAR(200) NOT NULL,
+ *   desc TEXT NULL,
+ *   acv_xp VARCHAR(20) NULL,
+ *   percent VARCHAR(50) NULL,
+ *   icon_url VARCHAR(255) NULL,
+ *   created_at TIMESTAMP NULL, updated_at TIMESTAMP NULL
+ * );
+ */
+public function up(): void
     {
            Schema::create('achievements', function (Blueprint $table) {
 

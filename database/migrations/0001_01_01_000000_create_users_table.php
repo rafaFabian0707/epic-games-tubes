@@ -4,17 +4,15 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-/**
- * PERBAIKAN dari versi sebelumnya:
- *  - Tambah kolom `password`      (Laravel auth wajib, ganti password_hash)
- *  - Tambah kolom `is_admin`      (dibutuhkan AdminMiddleware)
- *  - Tambah kolom `remember_token` (dibutuhkan Laravel session auth)
- *  - Rename `full_name` → tetap ada sebagai info tambahan
- *  - Pertahankan `username` sebagai display name
+/*
+ * SQL equivalent for this migration:
+ * CREATE TABLE `users` (
+ *   user_id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+ *   is_active TINYINT(1) NOT NULL DEFAULT 1,
+ *   created_at TIMESTAMP NULL, updated_at TIMESTAMP NULL
+ * );
  */
-return new class extends Migration
-{
-    public function up(): void
+public function up(): void
     {
         Schema::create('users', function (Blueprint $table) {
             $table->id('user_id');

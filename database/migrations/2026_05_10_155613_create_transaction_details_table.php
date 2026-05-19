@@ -6,10 +6,16 @@ use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
-    /**
-     * Run the migrations.
-     */
-    public function up(): void
+    /*
+ * SQL equivalent for this migration:
+ * CREATE TABLE `transaction_details` (
+ *   detail_id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+ *   transaction_id BIGINT UNSIGNED NOT NULL, FOREIGN KEY (transaction_id) REFERENCES transactions(transaction_id) ON DELETE CASCADE,
+ *   game_id BIGINT UNSIGNED NOT NULL, FOREIGN KEY (game_id) REFERENCES games(game_id) ON DELETE CASCADE,
+ *   created_at TIMESTAMP NULL, updated_at TIMESTAMP NULL
+ * );
+ */
+public function up(): void
     {
          Schema::create('transaction_details', function (Blueprint $table) {
 

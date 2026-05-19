@@ -16,6 +16,12 @@ class GameController extends Controller
 
     public function jelajahi(Request $request)
     {
+        // SQL equivalent (base query):
+        // SELECT g.*
+        // FROM games AS g
+        // WHERE g.is_active = 1
+        //   AND g.cover_image_url IS NOT NULL;
+        // Eloquent `with()` only eager-loads related models, tidak mengubah WHERE.
         $query = Game::active()
             ->with([
                 'publisher',
@@ -34,6 +40,9 @@ class GameController extends Controller
 
             $keyword = trim($request->q);
 
+            // SQL equivalent:
+            // WHERE (MATCH(title, main_desc, `desc`) AGAINST('keyword' IN NATURAL LANGUAGE MODE)
+            //        OR title LIKE '%keyword%')
             $query->where(function ($q) use ($keyword) {
 
                 $q->whereRaw(
@@ -62,6 +71,13 @@ class GameController extends Controller
 
         if ($request->filled('genre')) {
 
+            // SQL equivalent:
+            // WHERE EXISTS (
+            //   SELECT 1 FROM game_genre
+            //   JOIN genres ON game_genre.genre_id = genres.genre_id
+            //   WHERE game_genre.game_id = games.game_id
+            //     AND genres.genre_id = ?
+            // )
             $query->whereHas('genres', function ($q) use ($request) {
 
                 $q->where('genres.genre_id', $request->genre);

@@ -78,6 +78,12 @@ class DashboardController extends Controller
             'editor'     => '#ec4899', 'langganan'   => '#14b8a6',
             'pengalaman' => '#a78bfa',
         ];
+        // SQL equivalent:
+        // SELECT game_type, COUNT(*) AS count
+        // FROM games
+        // WHERE is_active = 1
+        // GROUP BY game_type
+        // ORDER BY count DESC;
         $rows  = Game::where('is_active', true)
             ->select('game_type', DB::raw('COUNT(*) as count'))
             ->groupBy('game_type')->orderByDesc('count')->get();
@@ -102,6 +108,18 @@ class DashboardController extends Controller
         } catch (\Throwable) {}
 
         try {
+            // SQL equivalent:
+            // SELECT g.game_id, g.title, g.cover_image_url, g.avg_rating, p.name AS publisher,
+            //        COUNT(td.game_id) AS total_sold,
+            //        COALESCE(SUM(td.price_at_purchase),0) AS total_revenue
+            // FROM games AS g
+            // LEFT JOIN publishers AS p ON g.publisher_id = p.publisher_id
+            // LEFT JOIN transaction_details AS td ON g.game_id = td.game_id
+            // LEFT JOIN transactions AS t ON td.transaction_id = t.transaction_id AND t.completed_at IS NOT NULL
+            // WHERE g.is_active = 1
+            // GROUP BY g.game_id, g.title, g.cover_image_url, g.avg_rating, p.name
+            // ORDER BY total_sold DESC
+            // LIMIT 5;
             return DB::table('games AS g')
                 ->leftJoin('publishers AS p', 'g.publisher_id', '=', 'p.publisher_id')
                 ->leftJoin('transaction_details AS td', 'g.game_id', '=', 'td.game_id')
@@ -146,6 +164,16 @@ class DashboardController extends Controller
         } catch (\Throwable) {}
 
         try {
+            // SQL equivalent:
+            // SELECT u.user_id, u.username, u.email,
+            //        COUNT(t.transaction_id) AS total_transactions,
+            //        SUM(t.total_amount) AS total_spent
+            // FROM users AS u
+            // JOIN transactions AS t ON u.user_id = t.user_id AND t.completed_at IS NOT NULL
+            // WHERE u.is_admin = 0
+            // GROUP BY u.user_id, u.username, u.email
+            // ORDER BY total_spent DESC
+            // LIMIT 5;
             return DB::table('users AS u')
                 ->join('transactions AS t', fn($j) =>
                     $j->on('u.user_id', '=', 't.user_id')->whereNotNull('t.completed_at'))
@@ -171,6 +199,18 @@ class DashboardController extends Controller
         } catch (\Throwable) {}
 
         try {
+            // SQL equivalent:
+            // SELECT g.genre_id, g.name AS genre_name,
+            //        COUNT(DISTINCT td.game_id) AS total_games,
+            //        COUNT(td.detail_id) AS total_sold,
+            //        COALESCE(SUM(td.price_at_purchase),0) AS total_revenue
+            // FROM genres AS g
+            // JOIN game_genres AS gg ON g.genre_id = gg.genre_id
+            // JOIN transaction_details AS td ON gg.game_id = td.game_id
+            // JOIN transactions AS t ON td.transaction_id = t.transaction_id AND t.completed_at IS NOT NULL
+            // GROUP BY g.genre_id, g.name
+            // ORDER BY total_sold DESC
+            // LIMIT 6;
             return DB::table('genres AS g')
                 ->join('game_genres AS gg', 'g.genre_id', '=', 'gg.genre_id')
                 ->join('transaction_details AS td', 'gg.game_id', '=', 'td.game_id')
@@ -202,6 +242,16 @@ class DashboardController extends Controller
         } catch (\Throwable) {}
 
         try {
+            // SQL equivalent:
+            // SELECT YEAR(completed_at) AS tahun,
+            //        MONTH(completed_at) AS bulan,
+            //        DATE_FORMAT(completed_at, '%b %Y') AS nama_bulan,
+            //        SUM(total_amount) AS total_pendapatan
+            // FROM transactions
+            // WHERE completed_at IS NOT NULL
+            //   AND completed_at >= DATE_SUB(CURDATE(), INTERVAL 11 MONTH)
+            // GROUP BY YEAR(completed_at), MONTH(completed_at), DATE_FORMAT(completed_at, '%b %Y')
+            // ORDER BY tahun, bulan;
             $rows = DB::table('transactions')
                 ->selectRaw('YEAR(completed_at) AS tahun, MONTH(completed_at) AS bulan,
                     DATE_FORMAT(completed_at,"%b %Y") AS nama_bulan,

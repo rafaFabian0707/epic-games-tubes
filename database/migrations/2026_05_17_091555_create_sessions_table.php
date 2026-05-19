@@ -6,7 +6,16 @@ use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
-    public function up(): void
+    /*
+ * SQL equivalent for this migration:
+ * CREATE TABLE `sessions` (
+ *   id VARCHAR(255) NOT NULL,
+ *   user_id BIGINT UNSIGNED NULL,
+ *   ip_address VARCHAR(45) NULL,
+ *   user_agent TEXT NULL
+ * );
+ */
+public function up(): void
     {
         Schema::create('sessions', function (Blueprint $table) {
             $table->string('id')->primary();

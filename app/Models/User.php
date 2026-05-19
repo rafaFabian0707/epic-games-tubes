@@ -22,9 +22,17 @@ class User extends Authenticatable
     }
     public function alreadyOwns(int|array $gameIds): bool {
         $ids = is_array($gameIds) ? $gameIds : [$gameIds];
+        // SQL equivalent:
+        // SELECT EXISTS(
+        //   SELECT 1 FROM library
+        //   WHERE user_id = ? AND game_id IN (?, ?, ...)
+        // )
         return $this->library()->whereIn('game_id',$ids)->exists();
     }
     public function ownedFromList(array $gameIds) {
+        // SQL equivalent:
+        // SELECT game_id FROM library
+        // WHERE user_id = ? AND game_id IN (?, ?, ...)
         return $this->library()->whereIn('game_id',$gameIds)->pluck('game_id');
     }
 }
