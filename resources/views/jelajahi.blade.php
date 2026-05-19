@@ -304,11 +304,12 @@
         {{-- ===== KANAN: SIDEBAR FILTER (Alpine.js) ===== --}}
         <div class="w-72 shrink-0 bg-[#12131A] rounded-xl p-6 h-fit self-start text-white sticky top-24"
              x-data="{
-                hargaOpen: true,
-                genreOpen: false,
-                platformOpen: false,
-                tipeOpen: true,
-             }">
+    hargaOpen: true,
+    genreOpen: false,
+    featureOpen: false,
+    platformOpen: false,
+    tipeOpen: true,
+}">
 
             {{-- Header --}}
             <div class="flex justify-between items-center mb-5">
@@ -392,7 +393,67 @@
                     </div>
                 </div>
                 @endif
+                {{-- FEATURE --}}
+@if($features->isNotEmpty())
+<div class="border-b border-zinc-800 pb-4">
 
+    <button @click="featureOpen = !featureOpen"
+            class="flex justify-between items-center w-full py-2 hover:text-white/80 transition-colors">
+
+        <span class="font-medium">Features</span>
+
+        <svg class="w-4 h-4 transition-transform duration-200"
+             :class="featureOpen ? 'rotate-180' : ''"
+             viewBox="0 0 30 30"
+             fill="currentColor">
+
+            <path d="M18.707 9.707L12 16.414 5.293 9.707l1.414-1.414L12 13.586l5.293-5.293 1.414 1.414z"/>
+        </svg>
+    </button>
+
+    <div x-show="featureOpen"
+         x-transition
+         class="mt-3 space-y-2.5 text-zinc-300">
+
+        @foreach ($features as $feature)
+
+        <a href="{{ route('jelajahi', array_merge(
+                request()->except('feature','page'),
+                request('feature') == $feature->feature_id
+                    ? []
+                    : ['feature' => $feature->feature_id]
+            )) }}"
+
+           class="flex items-center gap-3 group cursor-pointer hover:text-white transition-colors">
+
+            <div class="w-4 h-4 rounded border flex items-center justify-center shrink-0
+                        {{ request('feature') == $feature->feature_id
+                            ? 'bg-[#26bbff] border-[#26bbff]'
+                            : 'border-zinc-600 group-hover:border-white' }}">
+
+                @if(request('feature') == $feature->feature_id)
+
+                <svg viewBox="0 0 12 12"
+                     class="w-3 h-3"
+                     fill="black">
+
+                    <path d="M10 3L5 8.5 2 5.5"/>
+                </svg>
+
+                @endif
+            </div>
+
+            <span class="text-xs">
+                {{ $feature->name }}
+            </span>
+
+        </a>
+
+        @endforeach
+
+    </div>
+</div>
+@endif
                 {{-- PLATFORM --}}
                 @if($platforms->isNotEmpty())
                 <div class="border-b border-zinc-800 pb-4">

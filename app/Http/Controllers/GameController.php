@@ -8,19 +8,10 @@ use App\Models\Feature;
 use App\Models\Platform;
 use Illuminate\Http\Request;
 
-/**
- * GameController
- *
- * Mengelola:
- * - Browse game (/jelajahi)
- * - Store (/store)
- * - Search
- * - Detail game
- */
 class GameController extends Controller
 {
     // =========================================================
-    // JELAJAHI — /jelajahi
+    // JELAJAHI — Browse Games
     // =========================================================
 
     public function jelajahi(Request $request)
@@ -34,6 +25,27 @@ class GameController extends Controller
                 'ageRating',
             ])
             ->whereNotNull('cover_image_url');
+
+        // =====================================================
+        // SEARCH KEYWORD
+        // =====================================================
+
+        if ($request->filled('q')) {
+
+            $keyword = trim($request->q);
+
+            $query->where(function ($q) use ($keyword) {
+
+                $q->whereRaw(
+                    "MATCH(title, main_desc, `desc`)
+                     AGAINST(? IN NATURAL LANGUAGE MODE)",
+                    [$keyword]
+                )
+
+                // fallback LIKE search
+                ->orWhere('title', 'LIKE', "%{$keyword}%");
+            });
+        }
 
         // =====================================================
         // FILTER: GAME TYPE
@@ -55,6 +67,17 @@ class GameController extends Controller
                 $q->where('genres.genre_id', $request->genre);
             });
         }
+        // =========================================================
+// FILTER: FEATURE
+// =========================================================
+
+if ($request->filled('feature')) {
+
+    $query->whereHas('features', function ($q) use ($request) {
+
+        $q->where('features.feature_id', $request->feature);
+    });
+}
 
         // =====================================================
         // FILTER: PLATFORM
@@ -139,38 +162,61 @@ class GameController extends Controller
             ->withQueryString();
 
         // =====================================================
-        // FILTER DATA
-        // =====================================================
+// FILTER DATA
+// =====================================================
 
-        $genres = Genre::orderBy('name')->get();
+$genres = Genre::orderBy('name')->get();
 
-        $platforms = Platform::orderBy('platform')->get();
+$features = Feature::orderBy('name')->get();
 
-        // =====================================================
-        // RETURN VIEW
-        // =====================================================
+$platforms = Platform::orderBy('platform')->get();
 
-        return view('jelajahi', compact(
-            'games',
-            'genres',
-            'platforms'
-        ));
+// =====================================================
+// RETURN VIEW
+// =====================================================
+
+return view('jelajahi', compact(
+    'games',
+    'genres',
+    'features',
+    'platforms'
+));
     }
 
     // =========================================================
-    // STORE — /store
+    // STORE
     // =========================================================
 
     public function index(Request $request)
     {
         $query = Game::active()
-            ->baseGame()
             ->with([
                 'publisher',
                 'discounts',
                 'platforms',
-                'ageRating',
-            ]);
+                'ageRating'
+            ])
+            ->baseGame();
+
+        // =====================================================
+        // SEARCH
+        // =====================================================
+
+        if ($request->filled('q')) {
+
+            $keyword = trim($request->q);
+
+            $query->where(function ($q) use ($keyword) {
+
+                $q->whereRaw(
+                    "MATCH(title, main_desc, `desc`)
+                     AGAINST(? IN NATURAL LANGUAGE MODE)",
+                    [$keyword]
+                )
+
+                ->orWhere('title', 'LIKE', "%{$keyword}%");
+            });
+        }
 
         // =====================================================
         // FILTER: GENRE
@@ -240,7 +286,7 @@ class GameController extends Controller
         }
 
         // =====================================================
-        // FILTER: INFO BADGE
+        // FILTER: INFO
         // =====================================================
 
         if ($request->filled('info')) {
@@ -275,38 +321,28 @@ class GameController extends Controller
                 $query->orderByDesc('created_at'),
         };
 
-        // =====================================================
-        // PAGINATION
-        // =====================================================
-
         $games = $query
             ->paginate(24)
             ->withQueryString();
 
-        // =====================================================
-        // FILTER DATA
-        // =====================================================
-
         $genres = Genre::orderBy('name')->get();
 
-        $features = Feature::orderBy('name')->get();
+$genres = Genre::orderBy('name')->get();
 
-        $platforms = Platform::orderBy('platform')->get();
+$features = Feature::orderBy('name')->get();
 
-        // =====================================================
-        // RETURN VIEW
-        // =====================================================
+$platforms = Platform::orderBy('platform')->get();
 
-        return view('games.index', compact(
-            'games',
-            'genres',
-            'features',
-            'platforms'
-        ));
+return view('jelajahi', compact(
+    'games',
+    'genres',
+    'features',
+    'platforms'
+));
     }
 
     // =========================================================
-    // SEARCH — /store/search
+    // SEARCH PAGE
     // =========================================================
 
     public function search(Request $request)
@@ -322,12 +358,18 @@ class GameController extends Controller
                     'publisher',
                     'discounts',
                     'platforms',
-                    'ageRating',
+                    'ageRating'
                 ])
-                ->whereRaw(
-                    'MATCH(title, main_desc, `desc`) AGAINST(? IN BOOLEAN MODE)',
-                    [$keyword . '*']
-                )
+                ->where(function ($q) use ($keyword) {
+
+                    $q->whereRaw(
+                        "MATCH(title, main_desc, `desc`)
+                         AGAINST(? IN NATURAL LANGUAGE MODE)",
+                        [$keyword]
+                    )
+
+                    ->orWhere('title', 'LIKE', "%{$keyword}%");
+                })
                 ->limit(40)
                 ->get();
         }
@@ -339,7 +381,7 @@ class GameController extends Controller
     }
 
     // =========================================================
-    // SHOW — /game/{id}
+    // DETAIL GAME
     // =========================================================
 
     public function show(int $id)
@@ -359,10 +401,11 @@ class GameController extends Controller
                 'socialLinks',
                 'criticReviews',
 
-                'children' => fn ($q) =>
+                'children' => function ($q) {
 
                     $q->where('is_active', true)
-                        ->with('discounts'),
+                        ->with('discounts');
+                }
             ])
             ->where('game_id', $id)
             ->firstOrFail();
@@ -374,7 +417,7 @@ class GameController extends Controller
         $relatedGames = Game::active()
             ->with([
                 'publisher',
-                'discounts',
+                'discounts'
             ])
             ->whereHas('genres', function ($q) use ($game) {
 
