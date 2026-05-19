@@ -22,9 +22,11 @@
 
         {{-- Brand --}}
         <div class="flex items-center gap-3 px-4 py-[18px] border-b border-[#1e1e22] shrink-0 overflow-hidden">
-            {{-- Logo PNG --}}
-        
-            <img src="/img/logo_ph.png" alt="Epic Games" class="h-8 w-auto shrink-0">
+            {{-- Logo SVG --}}
+            <svg class="w-7 h-7 shrink-0 text-[#0078f2]" viewBox="0 0 32 38" fill="currentColor">
+                <path d="M16 0L0 5v28l16 5 16-5V5L16 0zm13.1 31.4L16 35.3 2.9 31.4V7.4L16 3.5l13.1 3.9v24z"/>
+                <path d="M9 11h14v3H9zm0 6h14v3H9zm0 6h9v3H9z"/>
+            </svg>
             <span class="font-bold text-sm tracking-wide whitespace-nowrap transition-all duration-200 overflow-hidden"
                   :class="sidebarOpen ? 'opacity-100 w-auto' : 'opacity-0 w-0'">
                 Admin Panel

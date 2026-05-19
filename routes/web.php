@@ -110,6 +110,7 @@ Route::middleware('auth')->group(function () {
     // LIBRARY
     // =========================
 
+    // Library hanya READ — data diisi trigger MySQL otomatis
     Route::get('/library', [LibraryController::class, 'index'])
         ->name('library.index');
 
@@ -131,7 +132,7 @@ Route::middleware('auth')->group(function () {
 });
 
 // =========================================================
-// ADMIN AUTH
+// ADMIN AUTH — Login/logout khusus admin (TANPA middleware admin)
 // =========================================================
 
 Route::prefix('/admin')->name('admin.')->group(function () {
@@ -148,7 +149,7 @@ Route::prefix('/admin')->name('admin.')->group(function () {
 });
 
 // =========================================================
-// ADMIN ROUTES
+// ADMIN ROUTES — Harus login + is_admin = true
 // =========================================================
 
 Route::middleware(['auth', 'admin'])
@@ -156,6 +157,7 @@ Route::middleware(['auth', 'admin'])
     ->name('admin.')
     ->group(function () {
 
+        // Redirect /admin -> /admin/dashboard
         Route::redirect('/', '/admin/dashboard');
 
         // =========================
@@ -170,10 +172,12 @@ Route::middleware(['auth', 'admin'])
         // =========================
 
         Route::resource('games', AdminGameController::class);
+        Route::patch('games/{game}/restore', [AdminGameController::class, 'restore'])->name('games.restore');
 
         Route::resource('platforms', AdminPlatformController::class);
 
         Route::resource('news', AdminNewsController::class);
+        Route::patch('news/{news}/restore', [AdminNewsController::class, 'restore'])->name('news.restore');
 
         Route::resource('discounts', AdminDiscountController::class);
 
