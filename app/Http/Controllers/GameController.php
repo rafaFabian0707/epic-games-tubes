@@ -101,7 +101,7 @@ if ($request->filled('feature')) {
 
                 'free' =>
 
-                    $query->where('base_price', 0),
+    $query->free(),
 
                 'discount' =>
 
