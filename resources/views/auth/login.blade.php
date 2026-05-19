@@ -7,10 +7,7 @@
     <div class="w-full max-w-[440px] bg-[#18181c] border border-[#2a2a2e] rounded-[12px] p-10 shadow-2xl">
         
         <div class="flex justify-center mb-5">
-            <svg class="w-10 h-12 text-white" viewBox="0 0 32 38" fill="currentColor">
-                <path d="M16 0L0 5v28l16 5 16-5V5L16 0zm13.1 31.4L16 35.3l-13.1-3.9V7.4L16 3.5l13.1 3.9v24z"/>
-                <path d="M9 11h14v3H9zm0 6h14v3H9zm0 6h9v3H9z"/>
-            </svg>
+            <img src="/img/logo_ph.png" alt="Epic Games" class="h-15 w-auto shrink-0">
         </div>
 
         <h1 class="text-[18px] font-bold tracking-tight text-center mb-6">Masuk ke Epic Games</h1>
