@@ -43,6 +43,12 @@ Route::get('/store', [GameController::class, 'index'])
 Route::get('/store/search', [GameController::class, 'search'])
     ->name('store.search');
 
+Route::get('/game/{id}/addons', [GameController::class, 'addons'])
+    ->name('game.addons');
+
+Route::get('/game/{id}/achievements', [GameController::class, 'achievements'])
+    ->name('game.achievements');
+
 Route::get('/game/{id}', [GameController::class, 'show'])
     ->name('game.show');
 

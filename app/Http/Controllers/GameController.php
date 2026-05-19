@@ -385,55 +385,141 @@ return view('jelajahi', compact(
     // =========================================================
 
     public function show(int $id)
-    {
-        $game = Game::active()
-            ->with([
-                'publisher',
-                'developer',
-                'genres',
-                'features',
-                'tags',
-                'platforms',
-                'ageRating',
-                'systemRequirements',
-                'achievements',
-                'discounts',
-                'socialLinks',
-                'criticReviews',
+{
+    $game = Game::active()
+        ->with([
+            'publisher',
+            'developer',
+            'genres',
+            'features',
+            'tags',
+            'platforms',
+            'ageRating',
+            'systemRequirements',
+            'achievements',
+            'discounts',
+            'socialLinks',
+            'criticReviews',
+            'parentGame',
+        ])
+        ->where('game_id', $id)
+        ->firstOrFail();
 
-                'children' => function ($q) {
+    /*
+    |--------------------------------------------------------------------------
+    | Ambil root parent
+    |--------------------------------------------------------------------------
+    | Kalau yang dibuka base game:
+    | root = game_id dia sendiri
+    |
+    | Kalau yang dibuka edition / addon:
+    | root = parent_game_id
+    */
+    $familyRootId = $game->parent_game_id ?: $game->game_id;
 
-                    $q->where('is_active', true)
-                        ->with('discounts');
-                }
-            ])
-            ->where('game_id', $id)
-            ->firstOrFail();
+    /*
+    |--------------------------------------------------------------------------
+    | Ambil semua game yang satu keluarga berdasarkan parent_game_id
+    |--------------------------------------------------------------------------
+    */
+    $familyItems = Game::active()
+        ->with(['discounts'])
+        ->where('parent_game_id', $familyRootId)
+        ->where('game_id', '!=', $game->game_id)
+        ->orderBy('title')
+        ->get();
 
-        // =====================================================
-        // RELATED GAMES
-        // =====================================================
+    /*
+    |--------------------------------------------------------------------------
+    | Pisahkan edition/bundle dan add-on
+    |--------------------------------------------------------------------------
+    */
+    $editions = $familyItems->whereIn('game_type', [
+        'edition',
+        'bundle',
+    ]);
 
-        $relatedGames = Game::active()
-            ->with([
-                'publisher',
-                'discounts'
-            ])
-            ->whereHas('genres', function ($q) use ($game) {
+    $addons = $familyItems->where('game_type', 'addon');
 
-                $q->whereIn(
-                    'genres.genre_id',
-                    $game->genres->pluck('genre_id')
-                );
-            })
-            ->where('game_id', '!=', $id)
-            ->inRandomOrder()
-            ->limit(6)
-            ->get();
+    $familyTitle = optional($game->parentGame)->title ?? $game->title;
 
-        return view('games.show', compact(
-            'game',
-            'relatedGames'
-        ));
-    }
+    /*
+    |--------------------------------------------------------------------------
+    | Related Games
+    |--------------------------------------------------------------------------
+    */
+    $relatedGames = Game::active()
+        ->with([
+            'publisher',
+            'discounts'
+        ])
+        ->whereHas('genres', function ($q) use ($game) {
+            $q->whereIn(
+                'genres.genre_id',
+                $game->genres->pluck('genre_id')
+            );
+        })
+        ->where('game_id', '!=', $id)
+        ->inRandomOrder()
+        ->limit(6)
+        ->get();
+
+    return view('games.show', compact(
+        'game',
+        'relatedGames',
+        'editions',
+        'addons',
+        'familyTitle'
+    ));
+}
+
+    public function addons(int $id)
+{
+    $game = Game::active()
+        ->with([
+            'achievements',
+            'parentGame',
+        ])
+        ->where('game_id', $id)
+        ->firstOrFail();
+
+    $familyRootId = $game->parent_game_id ?: $game->game_id;
+
+    $addons = Game::active()
+        ->with(['discounts'])
+        ->where('parent_game_id', $familyRootId)
+        ->where('game_id', '!=', $game->game_id)
+        ->where('game_type', 'addon')
+        ->orderBy('title')
+        ->get();
+
+    // Supaya file resources/views/games/addon.blade.php tetap bisa pakai $game->children
+    $game->setRelation('children', $addons);
+
+    return view('games.addon', compact('game'));
+}
+
+public function achievements(int $id)
+{
+    $game = Game::active()
+        ->with([
+            'achievements',
+            'parentGame',
+        ])
+        ->where('game_id', $id)
+        ->firstOrFail();
+
+    $familyRootId = $game->parent_game_id ?: $game->game_id;
+
+    $familyItems = Game::active()
+        ->with(['discounts'])
+        ->where('parent_game_id', $familyRootId)
+        ->where('game_id', '!=', $game->game_id)
+        ->get();
+
+    // Supaya tab Add-Ons tetap muncul walaupun yang dibuka edition/addon
+    $game->setRelation('children', $familyItems);
+
+    return view('games.achievements', compact('game'));
+}
 }

@@ -243,88 +243,42 @@
             </div>
             @endif
 
-            {{-- ── Editions / Children cards ── --}}
-            @if($game->children->count())
-            <div>
-                <h3 class="text-xl font-bold text-white mb-4">{{ $game->title }} Editions</h3>
-                <div class="space-y-3">
-                    @foreach($game->children as $child)
-                    @php
-                        $childDisc = $child->discounts->filter(fn($d) =>
-                            $d->is_active && $d->start_date <= now() && $d->end_date >= now()
-                        )->first();
-                    @endphp
-                    <div class="flex gap-4 bg-gray-900/60 border border-gray-800 rounded-2xl p-4 hover:border-gray-600 hover:bg-gray-900/80 transition-all duration-200 group">
-                        {{-- Cover --}}
-                        <div class="w-36 aspect-[3/2] rounded-lg overflow-hidden flex-shrink-0 bg-gray-800">
-                            @if($child->cover_image_url)
-                                <img src="{{ $child->cover_image_url }}" alt="{{ $child->title }}" class="w-full h-full object-cover">
-                            @else
-                                <div class="w-full h-full bg-gray-800"></div>
-                            @endif
-                        </div>
-                        {{-- Info --}}
-                        <div class="flex-1 min-w-0">
-                            <p class="text-gray-400 text-xs mb-1">
-                                {{ $child->game_type === 'base_game' ? 'Base Game' : ucwords(str_replace('_', ' ', $child->game_type)) }}
-                            </p>
-                            <h4 class="text-white font-bold text-base mb-1 group-hover:text-blue-300 transition-colors leading-snug">{{ $child->title }}</h4>
-                            @if($child->main_desc)
-                            <p class="text-gray-500 text-xs leading-relaxed line-clamp-2 mb-3">{{ $child->main_desc }}</p>
-                            @endif
-                            <div class="border-t border-gray-800/60 pt-3">
-                                {{-- Price --}}
-                                <div class="flex items-center gap-2 mb-2">
-                                    @if($childDisc)
-                                    <span class="bg-blue-600/90 text-white text-xs font-bold px-1.5 py-0.5 rounded">-{{ $child->discount_pct }}%</span>
-                                    <span class="text-gray-500 text-sm line-through">IDR {{ number_format($child->base_price, 0, ',', '.') }}</span>
-                                    @endif
-                                    <span class="text-white font-bold text-base">
-                                        @if($child->final_price == 0) Free
-                                        @else IDR {{ number_format($child->final_price, 0, ',', '.') }}
-                                        @endif
-                                    </span>
-                                </div>
-                                @if($childDisc)
-                                <p class="text-gray-500 text-xs mb-3">
-                                    Sale ends {{ \Carbon\Carbon::parse($childDisc->end_date)->format('n/j/Y') }} at 10:00 PM
-                                </p>
-                                @endif
-                                {{-- Add to cart --}}
-                                <div class="flex items-center gap-2">
-                                    @auth
-                                    <form action="{{ route('cart.add') }}" method="POST" class="flex-1">
-                                        @csrf
-                                        <input type="hidden" name="game_id" value="{{ $child->game_id }}">
-                                        <button type="submit"
-                                                class="w-full bg-blue-500 hover:bg-blue-400 active:scale-95 text-white font-semibold py-2 px-4 rounded-xl text-sm transition-all duration-200">
-                                            Add To Cart
-                                        </button>
-                                    </form>
-                                    <form action="{{ route('wishlist.add') }}" method="POST">
-                                        @csrf
-                                        <input type="hidden" name="game_id" value="{{ $child->game_id }}">
-                                        <button type="submit"
-                                                class="w-9 h-9 bg-gray-800 hover:bg-gray-700 border border-gray-700 hover:border-gray-500 rounded-xl flex items-center justify-center text-gray-400 hover:text-white transition-all">
-                                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z"/>
-                                            </svg>
-                                        </button>
-                                    </form>
-                                    @else
-                                    <a href="{{ route('login') }}"
-                                       class="flex-1 text-center bg-blue-500 hover:bg-blue-400 text-white font-semibold py-2 px-4 rounded-xl text-sm transition-all">
-                                        Add To Cart
-                                    </a>
-                                    @endauth
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    @endforeach
-                </div>
-            </div>
-            @endif
+            {{-- ── Editions / Bundles berdasarkan parent_game_id ── --}}
+@if($editions->count())
+<div>
+    <h3 class="text-xl font-bold text-white mb-4">
+        {{ $familyTitle }} Editions
+    </h3>
+
+    <div class="space-y-3">
+        @foreach($editions as $item)
+            @include('games.partials.family-card', ['item' => $item])
+        @endforeach
+    </div>
+</div>
+@endif
+
+{{-- ── DLC / Add-Ons berdasarkan parent_game_id ── --}}
+@if($addons->count())
+<div>
+    <div class="flex items-center justify-between mb-4">
+        <h3 class="text-xl font-bold text-white">
+            {{ $familyTitle }} DLC & Add-Ons
+        </h3>
+
+        <a href="{{ route('game.addons', $game->game_id) }}"
+           class="text-blue-400 hover:text-blue-300 text-sm font-medium">
+            See all →
+        </a>
+    </div>
+
+    <div class="space-y-3">
+        @foreach($addons->take(4) as $item)
+            @include('games.partials.family-card', ['item' => $item])
+        @endforeach
+    </div>
+</div>
+@endif
 
             {{-- ── Follow Us (social links) ── --}}
             @if($game->socialLinks->count())
@@ -696,7 +650,7 @@
             </div>
 
             {{-- See All Editions --}}
-            @if($game->children->count())
+            @if($editions->count() || $addons->count())
             <a href="{{ route('game.addons', $game->game_id) }}"
                class="flex items-center justify-between py-3.5 border-t border-b border-gray-800/40 text-gray-300 hover:text-white text-sm transition-colors group">
                 <span>See All Editions and Add-Ons</span>
